@@ -3,9 +3,17 @@ import SignUpForm from "@/components/forms/signup-form";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Sign Up - DevResumeAI",
+  title: "Sign Up - RezumaX", // ✅ Updated app name
   description:
-    "Create a DevResumeAI account to start building and optimizing your resumes.",
+    "Create a RezumaX account to start building and optimizing your resumes quickly with AI-powered suggestions.", // ✅ Updated description
+  keywords: [
+    "signup",
+    "resume builder",
+    "AI resume",
+    "RezumaX",
+    "resume optimizer",
+    "job application",
+  ],
 };
 
 export default function SignUpPage() {
