@@ -1,12 +1,13 @@
-// app/(auth)/login/page.tsx
+// app/(auth)/signup/page.tsx
 import SignUpForm from "@/components/forms/signup-form";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Login - DevResumeAI",
-  description: "Log in to your DevResumeAI account to manage your resumes.",
+  title: "Sign Up - DevResumeAI",
+  description:
+    "Create a DevResumeAI account to start building and optimizing your resumes.",
 };
 
-export default function LoginPage() {
+export default function SignUpPage() {
   return <SignUpForm />;
 }

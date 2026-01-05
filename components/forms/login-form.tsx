@@ -22,6 +22,7 @@ import { Input } from "@/components/ui/input";
 import { signIn } from "@/server/users";
 import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
+import React from "react";
 
 const formSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -30,7 +31,7 @@ const formSchema = z.object({
 
 export default function LoginForm() {
   const router = useRouter();
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = React.useState<boolean>(false);
 
   const signInWithGoogle = async () => {
     await authClient.signIn.social({

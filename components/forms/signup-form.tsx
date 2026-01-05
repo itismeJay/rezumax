@@ -22,6 +22,7 @@ import { Input } from "@/components/ui/input";
 import { signUp } from "@/server/users";
 import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
+import React from "react";
 
 const formSchema = z.object({
   username: z.string().min(3, "Username must be at least 3 characters long"),
@@ -31,7 +32,7 @@ const formSchema = z.object({
 
 export default function SignUpForm() {
   const router = useRouter();
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = React.useState<boolean>(false);
 
   const signInWithGoogle = async () => {
     await authClient.signIn.social({
