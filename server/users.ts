@@ -14,16 +14,16 @@ export const signIn = async (email: string, password: string) => {
     // Success
     return { success: true, message: "Signed in successfully" };
   } catch (error: any) {
-    // Check if the error is because the email is not verified
-    if (
-      error.status === 403 &&
-      error.message?.toLowerCase().includes("verify")
-    ) {
-      return {
-        success: false,
-        message: "Please verify your email address before signing in.",
-        unverified: true, // optional flag for frontend
-      };
+    if (error && typeof error === "object" && "code" in error) {
+      const code = (error as { code: string }).code;
+
+      if (code === auth.$ERROR_CODES.EMAIL_NOT_VERIFIED) {
+        return {
+          success: false,
+          message: "Please verify your email address before signing in.",
+          unverified: true,
+        };
+      }
     }
 
     // Optional: handle invalid credentials
