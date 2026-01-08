@@ -1,5 +1,5 @@
 import { Logout } from "@/components/logout";
-import { Button } from "@react-email/components";
+import { Button } from "@/components/ui/button";
 
 function DashboardPage() {
   return (

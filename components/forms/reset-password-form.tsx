@@ -98,7 +98,7 @@ export function ResetPasswordForm({
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               <FieldGroup>
-                {/* EMAIL */}
+                {/* PASSWORD */}
                 <Field>
                   <FormField
                     control={form.control}
@@ -113,7 +113,7 @@ export function ResetPasswordForm({
                       </FormItem>
                     )}
                   />
-
+                  {/* CONFIRM PASSWORD */}
                   <FormField
                     control={form.control}
                     name="confirmPassword"
