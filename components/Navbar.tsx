@@ -5,12 +5,25 @@ import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { FileText, Menu, X, Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
+import { authClient } from "@/lib/auth-client";
+import { useRouter } from "next/navigation";
 
 export function Navbar() {
+  const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const { theme, setTheme } = useTheme();
   const pathname = usePathname();
   const [mounted, setMounted] = useState(false);
+  const { data: session, isPending } = authClient.useSession();
+
+  const handleGetStarted = () => {
+    if (isPending) return;
+    if (!session) {
+      router.push("/login");
+    } else {
+      router.push("/dashboard");
+    }
+  };
 
   useEffect(() => {
     setMounted(true);
@@ -78,7 +91,7 @@ export function Navbar() {
                 variant="ghost"
                 size="icon"
                 onClick={toggleTheme}
-                className="rounded-full relative overflow-hidden"
+                className="rounded-full relative overflow-hidden cursor-pointer"
               >
                 <Sun
                   className={`absolute w-5 h-5 transition-all duration-500 ${
@@ -96,13 +109,16 @@ export function Navbar() {
                 />
               </Button>
             )}
-            <Link href="/login">
-              <Button variant="ghost" size="sm">
-                Log in
+            <Link href={!session ? "/login" : "/dashboard"}>
+              <Button variant="ghost" className="cursor-pointer" size="sm">
+                {!session ? "Sign in" : "Dashboard"}
               </Button>
             </Link>
-            <Link href="/dashboard">
-              <Button size="sm">Get Started Free</Button>
+
+            <Link href={session ? "/dashboard" : "/login"}>
+              <Button variant="gradient" className="cursor-pointer" size="sm">
+                Get Started Free
+              </Button>
             </Link>
           </div>
 
@@ -166,9 +182,13 @@ export function Navbar() {
                   </Button>
                 </Link>
 
-                <Link href="/dashboard" className="cursor-pointer w-full">
-                  <Button className="w-full">Get Started Free</Button>
-                </Link>
+                <Button
+                  className="w-full"
+                  onClick={handleGetStarted}
+                  disabled={isPending}
+                >
+                  Get Started
+                </Button>
               </div>
             </div>
           </div>

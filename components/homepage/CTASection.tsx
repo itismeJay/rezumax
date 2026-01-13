@@ -3,8 +3,21 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
+import { authClient } from "@/lib/auth-client";
+import { useRouter } from "next/navigation";
 
 export function CTASection() {
+  const router = useRouter();
+  const { data: session, isPending } = authClient.useSession();
+
+  const handleGetStarted = () => {
+    if (isPending) return;
+    if (!session) {
+      router.push("/login");
+    } else {
+      router.push("/dashboard");
+    }
+  };
   return (
     <section className="py-20 lg:py-32">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -20,18 +33,17 @@ export function CTASection() {
               Ready to Land Your Dream Job?
             </h2>
             <p className="text-lg text-primary-foreground/80 mb-8">
-              Join thousands of developers who have improved their resumes and landed positions at top tech companies.
+              Join thousands of developers who have improved their resumes and
+              landed positions at top tech companies.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link href="/dashboard">
-                <Button
-                  size="xl"
-                  className="bg-primary-foreground text-primary hover:bg-primary-foreground/90 font-semibold shadow-xl"
-                >
-                  Build Your Resume Now
-                  <ArrowRight className="w-5 h-5 ml-2" />
-                </Button>
-              </Link>
+              <Button
+                onClick={handleGetStarted}
+                className="cursor-pointer bg-primary-foreground text-primary hover:bg-primary-foreground/90 font-semibold shadow-xl text-lg px-16 py-7"
+              >
+                Build Your Resume Now
+                <ArrowRight className="w-6 h-6 ml-2" />
+              </Button>
             </div>
           </div>
         </div>

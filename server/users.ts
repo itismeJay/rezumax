@@ -1,5 +1,44 @@
 "use server";
 import { auth } from "@/lib/auth";
+import { redirect } from "next/navigation";
+import { headers } from "next/headers";
+import { user } from "@/db/schema";
+import { db } from "@/db/drizzle";
+import { eq } from "drizzle-orm";
+
+export const getCurrentUser = async () => {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session) {
+    redirect("/login");
+  }
+
+  return session.user;
+};
+
+// 🐢 Slower - Get user with database data
+export async function getCurrentUserWithData() {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session) {
+    redirect("/login");
+  }
+
+  // Drizzle ORM query
+  const currentUser = await db.query.user.findFirst({
+    where: eq(user.id, session.user.id),
+  });
+
+  if (!currentUser) {
+    redirect("/login");
+  }
+
+  return currentUser;
+}
 
 export const signIn = async (email: string, password: string) => {
   try {
