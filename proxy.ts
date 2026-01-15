@@ -1,19 +1,22 @@
-// proxy.ts
+// middleware.ts (or proxy.ts)
 import { NextRequest, NextResponse } from "next/server";
-import { getSessionCookie } from "better-auth/cookies";
+import { auth } from "@/lib/auth"; // Import your Better Auth instance
 
 export async function proxy(request: NextRequest) {
-  const sessionCookie = getSessionCookie(request);
+  // Actually validate the session
+  const session = await auth.api.getSession({
+    headers: request.headers,
+  });
 
-  if (!sessionCookie) {
+  // If no valid session, redirect to home
+  if (!session) {
     return NextResponse.redirect(new URL("/", request.url));
   }
 
+  // Session is valid, allow access
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/dashboard"],
+  matcher: ["/dashboard/:path*"], // Also added :path* for nested routes
 };
-
-//THIS IS MIDDLEWARE RENAMED TO PROXY

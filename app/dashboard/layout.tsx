@@ -1,0 +1,22 @@
+"use client";
+
+import React from "react";
+import { DashboardSidebar } from "@/components/dashboard/dashboard-sidebar";
+
+interface DashboardLayoutProps {
+  children: React.ReactNode;
+}
+
+const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
+  return (
+    <div className="flex min-h-screen">
+      {/* Sidebar */}
+      <DashboardSidebar />
+
+      {/* Main content */}
+      <main className="flex-1 bg-background">{children}</main>
+    </div>
+  );
+};
+
+export default DashboardLayout;
