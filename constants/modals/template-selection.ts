@@ -1,12 +1,22 @@
-// /constants/modals/template-selection.ts
-import { Template } from "@/types/template";
+import jakeryanresume from "@/assets/resume-templates/jake-ryan-resume-template.png";
+import { StaticImageData } from "next/image";
 
-export const templates: Template[] = [
+// This is your data model
+export interface ResumeTemplate {
+  id: string;
+  name: string;
+  image: StaticImageData;
+  description: string;
+  features: string[];
+}
+
+export const ResumeTemplates: ResumeTemplate[] = [
   {
     id: "jake-ryan",
     name: "Jake Ryan",
-    description: "Minimal LaTeX-style template.",
-    thumbnail: "/templates/jake-ryan-thumbnail.png",
-    features: ["ATS-Optimized", "Clean Typography"],
+    image: jakeryanresume,
+    description:
+      "A sleek and professional resume template designed to showcase skills and experience with clarity and style.",
+    features: ["ATS-Optimized", "Clean Typography", "Minimal Design"],
   },
 ];

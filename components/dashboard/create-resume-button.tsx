@@ -9,7 +9,6 @@ import { useRouter } from "next/navigation";
 import { v4 as uuidv4 } from "uuid";
 import { CreateResumeModal } from "@/components/modals/create-resume-modal";
 import { TemplateSelectionModal } from "../modals/template-selection-modal";
-import { ResumeData } from "@/types/resume-data";
 
 interface CreateResumeButtonProps {
   variant?: ButtonProps["variant"];
@@ -26,10 +25,6 @@ export function CreateResumeButton({
   const [resumeModal, setResumeModal] = useState<boolean>(false);
   const [open, setOpen] = useState<boolean>(false);
 
-  const handleResumeData = (resumeData: any) => {
-    console.log(resumeData);
-  };
-
   const handleSelectTemplate = (templateId: string) => {
     // Generate a unique ID for the new resume
     const resumeId = uuidv4();
@@ -39,9 +34,6 @@ export function CreateResumeButton({
 
     // Close the modal
     setResumeModal(false);
-
-    // TODO: You can navigate to resume editor page with resumeId
-    // router.push(`/dashboard/resume/${resumeId}`);
   };
 
   const handleSelectType = (type: "resume" | "cover-letter") => {

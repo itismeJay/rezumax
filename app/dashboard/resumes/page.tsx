@@ -1,9 +1,8 @@
-import React from 'react'
+import React from "react";
+import JakeRyanResume from "@/components/templates/jake-ryan-template";
 
 const Resumes = () => {
-  return (
-    <div>Resumes</div>
-  )
-}
+  return <div>resumes</div>;
+};
 
-export default Resumes
+export default Resumes;
