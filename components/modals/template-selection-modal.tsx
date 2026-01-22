@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Check, Sparkles } from "lucide-react";
+import { Check, Loader2, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ResumeTemplate } from "@/constants/modals/template-selection";
 import { ResumeTemplates } from "@/constants/modals/template-selection";
@@ -20,12 +20,14 @@ interface TemplateSelectionModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSelectTemplate: (templateId: string) => void;
+  isLoading: boolean;
 }
 
 export function TemplateSelectionModal({
   open,
   onOpenChange,
   onSelectTemplate,
+  isLoading,
 }: TemplateSelectionModalProps) {
   const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
 
@@ -159,11 +161,15 @@ export function TemplateSelectionModal({
             <Button
               variant="gradient"
               onClick={handleApplyTemplate}
-              disabled={!selectedTemplate}
+              disabled={!selectedTemplate || isLoading}
               className="flex-1 gap-2 cursor-pointer"
             >
               <Sparkles className="w-4 h-4" />
-              Apply Template
+              {isLoading ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : (
+                "Apply Template"
+              )}
             </Button>
           </div>
         </div>
