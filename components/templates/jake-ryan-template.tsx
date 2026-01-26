@@ -2,7 +2,7 @@ import React from "react";
 
 export default function JakeRyanResume({ data }: any) {
   return (
-    <div className="flex justify-center min-h-screen bg-gray-100 py-8">
+    <div className="flex justify-center min-h-screen ">
       <div
         className="bg-white shadow-lg"
         style={{
