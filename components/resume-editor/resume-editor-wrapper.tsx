@@ -16,13 +16,14 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { PersonalInfoSection } from "@/components/resume-editor/personal-info-section";
-import { ResumeFromDB } from "@/types/resume-data";
+import { ResumeData, ResumeFromDB } from "@/types/resume-data";
 import { EducationInfoSection } from "./education-info-section";
 import { ExperienceInfoSection } from "./experience-info-section";
 import { ProjectsInfoSection } from "./projects-info-section";
 import { SkillsInfoSection } from "./skills-info-section";
 import { useState } from "react";
 import { ResumePreview } from "./resume-preview";
+import { toast } from "sonner";
 
 interface ResumeEditorWrapperProps {
   resumeData: ResumeFromDB;
@@ -31,11 +32,36 @@ interface ResumeEditorWrapperProps {
 export default function ResumeEditorWrapper({
   resumeData,
 }: ResumeEditorWrapperProps) {
-  const [resumeContent, setResumeContent] = useState(resumeData);
+  const [resumeContent, setResumeContent] = useState(
+    resumeData.content as ResumeData,
+  );
   const [isSaving, setIsSaving] = useState(false);
   const [zoomLevel, setZoomLevel] = useState(0.75);
 
+  //for saving the resume
+  const handleSave = async () => {
+    setIsSaving(true);
+    try {
+      // Make API call to save resumeContent
+      toast.success("Resume saved successfully!");
+    } catch (error) {
+      toast.error("Failed to save resume.");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handlePersonalInfoChange = (
+    personalInfo: ResumeData["personalInfo"],
+  ) => {
+    setResumeContent((prev) => ({
+      ...prev,
+      personalInfo,
+    }));
+  };
+
   console.log("ResumeData in Wrapper:", resumeData);
+  console.log("ResumeData in Wrapper:", resumeContent);
 
   return (
     <div className="min-h-screen bg-background flex flex-col h-screen">
@@ -126,24 +152,22 @@ export default function ResumeEditorWrapper({
 
               {/* Personal Information Card */}
               <PersonalInfoSection
-                personalInfo={resumeData.content.personalInfo}
+                personalInfo={resumeContent.personalInfo}
+                onChange={handlePersonalInfoChange}
               />
 
               {/* Education Section */}
-              <EducationInfoSection
-                educationInfo={resumeData.content.education}
-              />
+              <EducationInfoSection educationInfo={resumeContent.education} />
 
               {/* Experience Section */}
               <ExperienceInfoSection
-                experienceInfo={resumeData.content.experience}
+                experienceInfo={resumeContent.experience}
               />
 
               {/* Projects Section */}
-              <ProjectsInfoSection projectsInfo={resumeData.content.projects} />
-
+              <ProjectsInfoSection projectsInfo={resumeContent.projects} />
               {/* Skills Section */}
-              <SkillsInfoSection skillsInfo={resumeData.content.skills} />
+              <SkillsInfoSection skillsInfo={resumeContent.skills} />
 
               {/* Bottom Padding */}
               <div className="h-8" />
@@ -190,7 +214,7 @@ export default function ResumeEditorWrapper({
           <div className="flex-1 overflow-auto py-5">
             <ResumePreview
               template={resumeData.template}
-              content={resumeData.content}
+              content={resumeContent}
               scale={zoomLevel}
             />
           </div>

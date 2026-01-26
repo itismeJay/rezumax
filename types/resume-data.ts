@@ -8,7 +8,6 @@ export interface ResumeData {
     phone: string;
     linkedin?: string;
     github?: string;
-    location?: string;
     portfolio?: string;
   };
   education: Array<{
@@ -53,7 +52,6 @@ export const resumeDataSchema = z.object({
     phone: z.string(),
     linkedin: z.string().optional(),
     github: z.string().optional(),
-    location: z.string().optional(),
     portfolio: z.string().optional(),
   }),
   education: z.array(
