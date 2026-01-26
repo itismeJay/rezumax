@@ -5,7 +5,7 @@ import { eq, and } from "drizzle-orm";
 import { resume } from "@/db/schema";
 import { redirect, notFound } from "next/navigation";
 import { headers } from "next/headers";
-import { ResumeFromDB } from "@/types/resume-data";
+import { ResumeFromDB, resumeFromDBSchema } from "@/types/resume-data";
 import ResumeEditorWrapper from "@/components/resume-editor/resume-editor-wrapper";
 
 export default async function EditPage({
@@ -32,12 +32,11 @@ export default async function EditPage({
     notFound();
   }
 
-  // ✅ Cast the content to your ResumeFromDB type
-  const ResumeData = resumeData as ResumeFromDB;
-
+  // Validate the resume data from DB against the schema
+  const typedResumeData = resumeData as ResumeFromDB;
   return (
     <div>
-      <ResumeEditorWrapper resumeData={ResumeData} />
+      <ResumeEditorWrapper resumeData={typedResumeData} />
     </div>
   );
 }

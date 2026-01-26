@@ -1,7 +1,6 @@
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "../ui/textarea";
 
 // ✅ Define just the prop type you need
 interface SkillsInfoSectionProps {
