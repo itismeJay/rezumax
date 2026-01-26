@@ -1,3 +1,4 @@
+// types/resume.ts (or wherever you have ResumeData)
 export interface ResumeData {
   personalInfo: {
     fullName: string;
@@ -6,27 +7,50 @@ export interface ResumeData {
     linkedin?: string;
     github?: string;
     location?: string;
+    portfolio?: string;
   };
   education: Array<{
+    id: string;
     school: string;
     degree: string;
     location: string;
     startDate: string;
     endDate: string;
-    details?: string;
+    gpa?: string;
   }>;
   experience: Array<{
-    role: string;
+    id: string;
+    position: string;
     company: string;
+    location: string;
     startDate: string;
     endDate: string;
-    location: string;
-    description: string[];
+    bullets: string[];
   }>;
-  skills: string[];
   projects: Array<{
-    title: string;
-    description: string[];
-    tech?: string[];
+    id: string;
+    name: string;
+    technologies: string;
+    startDate?: string;
+    endDate?: string;
+    bullets: string[];
   }>;
+  skills: {
+    languages: string;
+    frameworks: string;
+    developerTools: string;
+    libraries: string;
+  };
+}
+
+// Type for the full database row
+export interface ResumeFromDB {
+  id: string;
+  userId: string;
+  title: string;
+  template: string;
+  content: ResumeData; // The JSON content matches ResumeData
+  score: number | null;
+  createdAt: Date;
+  updatedAt: Date;
 }
