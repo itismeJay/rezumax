@@ -27,29 +27,29 @@ export default function JakeRyanResume({ data }: any) {
               fontVariant: "small-caps",
             }}
           >
-            First Last
+            {data.personalInfo?.fullName || "First Last"}
           </h1>
           <div style={{ fontSize: "9.5pt", marginTop: "1px" }}>
-            123-456-7890 |{" "}
+            {data.personalInfo?.phone || "123-456-7890"} |{" "}
             <a
-              href="mailto:jake@su.edu"
+              href={`mailto:${data.personalInfo?.email || "jake@su.edu"}`}
               style={{ color: "#000", textDecoration: "underline" }}
             >
-              jake@su.edu
+              {data.personalInfo?.email || "jake@su.edu"}
             </a>{" "}
             |{" "}
             <a
-              href="https://linkedin.com/in/jake"
+              href={`https://linkedin.com/in/${data.personalInfo?.linkedin || "jake"}`}
               style={{ color: "#000", textDecoration: "underline" }}
             >
-              linkedin.com/in/jake
+              {data.personalInfo?.linkedin || "linkedin.com/in/jake"}
             </a>{" "}
             |{" "}
             <a
-              href="https://github.com/jake"
+              href={`https://github.com/${data.personalInfo?.github || "jake"}`}
               style={{ color: "#000", textDecoration: "underline" }}
             >
-              github.com/jake
+              {data.personalInfo?.github || "github.com/jake"}
             </a>
           </div>
         </div>
