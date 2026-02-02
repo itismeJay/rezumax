@@ -1,6 +1,11 @@
 import React from "react";
+import { ResumeData } from "@/types/resume-data";
 
-export default function JakeRyanResume({ data }: any) {
+interface JakeRyanResumeProps {
+  data: ResumeData;
+}
+
+export default function JakeRyanResume({ data }: JakeRyanResumeProps) {
   return (
     <div className="flex justify-center min-h-screen ">
       <div
@@ -53,7 +58,6 @@ export default function JakeRyanResume({ data }: any) {
             </a>
           </div>
         </div>
-
         {/* EDUCATION SECTION */}
         <div style={{ marginTop: "10px", marginBottom: "10px" }}>
           <h2
@@ -70,57 +74,41 @@ export default function JakeRyanResume({ data }: any) {
             Education
           </h2>
 
-          <div
-            style={{
-              marginTop: "5px",
-              marginBottom: "5px",
-              paddingLeft: "12px",
-              paddingRight: "12px",
-            }}
-          >
+          {data?.education?.map((edu, index) => (
             <div
-              className="flex justify-between"
-              style={{ marginBottom: "1px" }}
+              key={edu.id || index}
+              style={{
+                marginTop: "5px",
+                marginBottom: "5px",
+                paddingLeft: "12px",
+                paddingRight: "12px",
+              }}
             >
-              <div style={{ fontWeight: "bold", fontSize: "10.5pt" }}>
-                University Name
+              <div
+                className="flex justify-between"
+                style={{ marginBottom: "1px" }}
+              >
+                <div style={{ fontWeight: "bold", fontSize: "10.5pt" }}>
+                  {edu.school || "University Name"}
+                </div>
+                <div style={{ fontSize: "10.5pt" }}>
+                  {edu.location || "Georgetown, TX"}
+                </div>
               </div>
-              <div style={{ fontSize: "10.5pt" }}>Georgetown, TX</div>
-            </div>
-            <div
-              className="flex justify-between"
-              style={{ fontSize: "9.5pt", fontStyle: "italic" }}
-            >
-              <div>Bachelor of Arts in Computer Science, Minor in Business</div>
-              <div>Aug. 2018 – May 2021</div>
-            </div>
-          </div>
-
-          <div
-            style={{
-              marginTop: "5px",
-              marginBottom: "5px",
-              paddingLeft: "12px",
-              paddingRight: "12px",
-            }}
-          >
-            <div
-              className="flex justify-between"
-              style={{ marginBottom: "1px" }}
-            >
-              <div style={{ fontWeight: "bold", fontSize: "10.5pt" }}>
-                College Name
+              <div
+                className="flex justify-between"
+                style={{ fontSize: "9.5pt", fontStyle: "italic" }}
+              >
+                <div>
+                  {edu.degree || "Bachelor of Arts in Computer Science"}{" "}
+                  {edu.gpa ? `(GPA: ${edu.gpa})` : ""}
+                </div>
+                <div>
+                  {edu.startDate || "Aug. 2018"} – {edu.endDate || "May 2021"}
+                </div>
               </div>
-              <div style={{ fontSize: "10.5pt" }}>Bryan, TX</div>
             </div>
-            <div
-              className="flex justify-between"
-              style={{ fontSize: "9.5pt", fontStyle: "italic" }}
-            >
-              <div>Associate's in Liberal Arts</div>
-              <div>Aug. 2014 – May 2018</div>
-            </div>
-          </div>
+          ))}
         </div>
 
         {/* EXPERIENCE SECTION */}

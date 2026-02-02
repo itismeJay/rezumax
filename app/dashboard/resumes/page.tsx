@@ -11,6 +11,7 @@ import { CreateResumeModal } from "@/components/modals/create-resume-modal";
 
 export default function ResumesPage() {
   const router = useRouter();
+
   const [resumes, setResumes] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [showDocumentModal, setShowDocumentModal] = useState(false);

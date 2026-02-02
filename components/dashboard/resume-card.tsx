@@ -1,12 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import {
-  FileText,
-  TrendingUp,
-  Clock,
-  MoreVertical,
-} from "lucide-react";
+import { FileText, TrendingUp, Clock, MoreVertical } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -35,8 +30,8 @@ export function ResumeCard({
     score >= 80
       ? "text-success bg-success/10"
       : score >= 60
-      ? "text-warning bg-warning/10"
-      : "text-destructive bg-destructive/10";
+        ? "text-warning bg-warning/10"
+        : "text-destructive bg-destructive/10";
 
   const getScoreLabel = (score: number) =>
     score >= 80 ? "Excellent" : score >= 60 ? "Good" : "Needs Work";
@@ -54,9 +49,7 @@ export function ResumeCard({
               {title}
             </h3>
             {targetJob && (
-              <p className="text-xs text-muted-foreground">
-                {targetJob}
-              </p>
+              <p className="text-xs text-muted-foreground">{targetJob}</p>
             )}
           </div>
         </div>
@@ -88,7 +81,7 @@ export function ResumeCard({
           <span
             className={cn(
               "px-2.5 py-1 rounded-full text-xs font-medium",
-              getScoreColor(score)
+              getScoreColor(score),
             )}
           >
             {score}%
@@ -112,8 +105,8 @@ export function ResumeCard({
             score >= 80
               ? "bg-success"
               : score >= 60
-              ? "bg-warning"
-              : "bg-destructive"
+                ? "bg-warning"
+                : "bg-destructive",
           )}
           style={{ width: `${score}%` }}
         />
@@ -126,9 +119,13 @@ export function ResumeCard({
           {lastUpdated}
         </div>
 
-        <Link href={`/dashboard/resume/${id}`}>
-          <Button variant="ghost" size="sm" className="text-primary">
-            View Details
+        <Link href={`/edit/${id}`}>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-primary cursor-pointer"
+          >
+            Edit Resume
           </Button>
         </Link>
       </div>

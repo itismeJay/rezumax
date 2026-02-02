@@ -1,6 +1,11 @@
 // app/edit/[resumeId]/page.tsx
 "use client";
+
+import { useState } from "react";
 import Link from "next/link";
+import { toast } from "sonner";
+import { useDebouncedCallback } from "use-debounce";
+
 import {
   ArrowLeft,
   Save,
@@ -15,57 +20,149 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
-import { PersonalInfoSection } from "@/components/resume-editor/personal-info-section";
+
 import { ResumeData, ResumeFromDB } from "@/types/resume-data";
+
+import { PersonalInfoSection } from "@/components/resume-editor/personal-info-section";
 import { EducationInfoSection } from "./education-info-section";
 import { ExperienceInfoSection } from "./experience-info-section";
 import { ProjectsInfoSection } from "./projects-info-section";
 import { SkillsInfoSection } from "./skills-info-section";
-import { useState } from "react";
 import { ResumePreview } from "./resume-preview";
-import { toast } from "sonner";
+import axios from "axios";
+import { set } from "lodash";
 
+// ----------------------------------------------
+// Props Interface
+// ----------------------------------------------
 interface ResumeEditorWrapperProps {
   resumeData: ResumeFromDB;
 }
 
+// ----------------------------------------------
+// Main Component
+// ----------------------------------------------
 export default function ResumeEditorWrapper({
   resumeData,
 }: ResumeEditorWrapperProps) {
-  const [resumeContent, setResumeContent] = useState(
+  // --------------------------------------------
+  // State
+  // --------------------------------------------
+  const [editableResume, setEditableResume] = useState(
     resumeData.content as ResumeData,
   );
-  const [isSaving, setIsSaving] = useState(false);
+  const [saveStatus, setSaveStatus] = useState<"saving" | "saved" | null>(null);
+  const [isSaving, setIsSaving] = useState<boolean>(false);
   const [zoomLevel, setZoomLevel] = useState(0.75);
 
-  //for saving the resume
-  const handleSave = async () => {
+  // --------------------------------------------
+  // Auto-save Function (Debounced)
+  // --------------------------------------------
+  const debouncedAutoSave = useDebouncedCallback(
+    async (content: ResumeData) => {
+      try {
+        setSaveStatus("saving");
+
+        const response = await fetch(`/api/resumes/${resumeData.id}`, {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ content }),
+        });
+
+        if (!response.ok) throw new Error("Failed to save");
+
+        console.log("✅ Auto-saved successfully");
+        setSaveStatus("saved");
+
+        // Hide "Saved" indicator after 2 seconds
+        setTimeout(() => setSaveStatus(null), 2000);
+      } catch (error) {
+        console.error("❌ Auto-save failed:", error);
+        toast.error("Failed to auto-save changes");
+        setSaveStatus(null);
+      }
+    },
+    3000, // Wait 3 second after typing stops
+  );
+
+  // --------------------------------------------
+  // Handler for saving via button
+  // --------------------------------------------
+
+  // In your parent component (ResumeEditorWrapper)
+  const handleSaveClick = async () => {
     setIsSaving(true);
+    setSaveStatus("saving");
+
     try {
-      // Make API call to save resumeContent
+      await axios.patch(`/api/resumes/${resumeData.id}`, {
+        content: editableResume,
+      });
+
+      setSaveStatus("saved");
       toast.success("Resume saved successfully!");
+
+      setTimeout(() => {
+        setSaveStatus(null);
+      }, 5000);
     } catch (error) {
-      toast.error("Failed to save resume.");
+      console.error("Save failed:", error);
+      toast.error("Failed to save changes");
     } finally {
       setIsSaving(false);
     }
   };
 
+  // --------------------------------------------
+  // Handlers for Resume Sections
+  // --------------------------------------------
   const handlePersonalInfoChange = (
     personalInfo: ResumeData["personalInfo"],
   ) => {
-    setResumeContent((prev) => ({
-      ...prev,
-      personalInfo,
-    }));
+    const updatedResume = { ...editableResume, personalInfo };
+    setEditableResume(updatedResume);
+    debouncedAutoSave(updatedResume);
   };
 
-  console.log("ResumeData in Wrapper:", resumeData);
-  console.log("ResumeData in Wrapper:", resumeContent);
+  const handleEducationInfoChange = (
+    educationInfo: ResumeData["education"],
+  ) => {
+    const updatedResume = { ...editableResume, education: educationInfo };
+    setEditableResume(updatedResume);
+    debouncedAutoSave(updatedResume);
+  };
 
+  const handleExperienceInfoChange = (
+    experienceInfo: ResumeData["experience"],
+  ) => {
+    const updatedResume = { ...editableResume, experience: experienceInfo };
+    setEditableResume(updatedResume);
+    debouncedAutoSave(updatedResume);
+  };
+  const handleProjectsInfoSection = (projectsInfo: ResumeData["projects"]) => {
+    const updatedResume = { ...editableResume, projects: projectsInfo };
+    setEditableResume(updatedResume);
+    debouncedAutoSave(updatedResume);
+  };
+  const handleSkillsInfoSection = (skillsInfo: ResumeData["skills"]) => {
+    const updatedResume = { ...editableResume, skills: skillsInfo };
+    setEditableResume(updatedResume);
+    debouncedAutoSave(updatedResume);
+  };
+  // --------------------------------------------
+  // Debug Logs
+  // --------------------------------------------
+  console.log("ResumeData in Wrapper:", resumeData);
+  console.log("editableResume in Wrapper:", editableResume);
+
+  // --------------------------------------------
+  // JSX
+  // --------------------------------------------
   return (
     <div className="min-h-screen bg-background flex flex-col h-screen">
-      {/* Modern Header */}
+      {/* -------------------------------- Header -------------------------------- */}
       <header className="flex-shrink-0 border-b border-border bg-card/80 backdrop-blur-md sticky top-0 z-50">
         <div className="max-w-[1920px] mx-auto px-6 h-16 flex items-center justify-between gap-4">
           {/* Left: Back + Title */}
@@ -80,26 +177,38 @@ export default function ResumeEditorWrapper({
                 {resumeData.title || "Untitled Resume"}
               </h1>
               <p className="text-xs text-muted-foreground">
-                Last saved Just now · Jake Ryan template
+                {saveStatus === "saving" && "💾 Saving..."}
+                {saveStatus === "saved" && "✓ All changes saved"}
+                {!saveStatus && "Auto-saves as you type"}
               </p>
             </div>
           </div>
 
-          {/* Right: Actions */}
+          {/* Right: Action Buttons */}
           <div className="flex items-center gap-2">
             <Button
               variant="ghost"
               size="sm"
-              className="gap-2 text-muted-foreground"
+              className="gap-2 text-muted-foreground cursor-pointer"
             >
               <Upload className="w-4 h-4" />
               <span className="hidden sm:inline">Import</span>
             </Button>
-            <Button variant="outline" size="sm" className="gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-2 cursor-pointer"
+            >
               <Download className="w-4 h-4" />
               <span className="hidden sm:inline">Export PDF</span>
             </Button>
-            <Button variant="default" size="sm" className="gap-2">
+            <Button
+              variant="default"
+              size="sm"
+              className="gap-2 cursor-pointer"
+              onClick={handleSaveClick}
+              disabled={isSaving}
+            >
               <Save className="w-4 h-4" />
               <span className="hidden sm:inline">Save</span>
             </Button>
@@ -107,9 +216,9 @@ export default function ResumeEditorWrapper({
         </div>
       </header>
 
-      {/* Main Content - Split View */}
+      {/* -------------------------------- Main Content -------------------------------- */}
       <div className="flex-1 flex overflow-hidden">
-        {/* Left Panel - Editor */}
+        {/* ---------------- Left Panel: Editor ---------------- */}
         <div className="w-full lg:w-1/2 flex flex-col border-r border-border bg-muted/30 h-full overflow-hidden">
           {/* Panel Header */}
           <div className="flex-shrink-0 px-6 py-4 bg-background border-b border-border">
@@ -124,10 +233,10 @@ export default function ResumeEditorWrapper({
             </div>
           </div>
 
-          {/* Scrollable Form Content */}
+          {/* Scrollable Form */}
           <div className="flex-1 overflow-y-auto">
             <div className="p-6 space-y-5">
-              {/* AI Target Job Card */}
+              {/* AI Tailoring Card */}
               <Card className="border-primary/20 bg-gradient-to-br from-primary/5 to-transparent">
                 <CardHeader className="px-5">
                   <div className="flex items-center gap-2">
@@ -150,35 +259,36 @@ export default function ResumeEditorWrapper({
                 </CardContent>
               </Card>
 
-              {/* Personal Information Card */}
+              {/* Resume Sections */}
               <PersonalInfoSection
-                personalInfo={resumeContent.personalInfo}
+                personalInfo={editableResume.personalInfo}
                 onChange={handlePersonalInfoChange}
               />
-
-              {/* Education Section */}
-              <EducationInfoSection educationInfo={resumeContent.education} />
-
-              {/* Experience Section */}
+              <EducationInfoSection
+                educationInfo={editableResume.education}
+                onChange={handleEducationInfoChange}
+              />
               <ExperienceInfoSection
-                experienceInfo={resumeContent.experience}
+                experienceInfo={editableResume.experience}
+                onChange={handleExperienceInfoChange}
+              />
+              <ProjectsInfoSection
+                projectsInfo={editableResume.projects}
+                onChange={handleProjectsInfoSection}
+              />
+              <SkillsInfoSection
+                skillsInfo={editableResume.skills}
+                onChange={handleSkillsInfoSection}
               />
 
-              {/* Projects Section */}
-              <ProjectsInfoSection projectsInfo={resumeContent.projects} />
-              {/* Skills Section */}
-              <SkillsInfoSection skillsInfo={resumeContent.skills} />
-
-              {/* Bottom Padding */}
               <div className="h-8" />
             </div>
           </div>
         </div>
 
-        {/* Right Panel - Preview */}
-        {/* Right Panel - Preview */}
+        {/* ---------------- Right Panel: Live Preview ---------------- */}
         <div className="hidden lg:flex w-1/2 bg-muted/50 flex-col h-full overflow-hidden">
-          {/* Preview Header with Zoom Controls */}
+          {/* Preview Header */}
           <div className="flex-shrink-0 px-6 py-3 bg-background/80 backdrop-blur-sm border-b border-border flex items-center justify-between">
             <span className="font-medium text-sm text-muted-foreground">
               Live Preview
@@ -194,11 +304,9 @@ export default function ResumeEditorWrapper({
               >
                 <ZoomOut className="w-4 h-4" />
               </Button>
-
               <span className="text-xs text-muted-foreground w-12 text-center font-mono">
                 {Math.round(zoomLevel * 100)}%
               </span>
-
               <Button
                 variant="ghost"
                 size="icon"
@@ -214,7 +322,7 @@ export default function ResumeEditorWrapper({
           <div className="flex-1 overflow-auto py-5">
             <ResumePreview
               template={resumeData.template}
-              content={resumeContent}
+              content={editableResume}
               scale={zoomLevel}
             />
           </div>
