@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -40,6 +40,11 @@ export function SkillsInfoSection({
   const [visible, setVisible] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const [showOptionalFields, setShowOptionalFields] = useState(false);
+
+  // Sync skills state when skillsInfo prop changes
+  useEffect(() => {
+    setSkills(skillsInfo);
+  }, [skillsInfo]);
 
   // Update skill field
   const handleFieldChange = (field: keyof SkillsData, value: string) => {

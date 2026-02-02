@@ -1,4 +1,6 @@
-import { useState } from "react";
+"use client";
+
+import { useState, useEffect } from "react";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -29,6 +31,11 @@ export function ExperienceInfoSection({
 }: ExperienceSectionProps) {
   const [entries, setEntries] = useState<ExperienceEntry[]>(experienceInfo);
   const [isEditing, setIsEditing] = useState(false);
+
+  // Sync entries state when experienceInfo prop changes
+  useEffect(() => {
+    setEntries(experienceInfo);
+  }, [experienceInfo]);
 
   // Update entry field
   const handleFieldChange = (

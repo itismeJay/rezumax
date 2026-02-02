@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -42,6 +42,11 @@ export function EducationInfoSection({
   const [collapsed, setCollapsed] = useState(false);
   const [visible, setVisible] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
+
+  // Sync entries state when educationInfo prop changes
+  useEffect(() => {
+    setEntries(educationInfo);
+  }, [educationInfo]);
 
   // Add a new education entry
   const handleAddEntry = () => {
@@ -131,7 +136,7 @@ export function EducationInfoSection({
       </CardHeader>
 
       {/* Content */}
-      {!collapsed && (
+      {!collapsed && visible && (
         <CardContent className="px-5 pb-5 space-y-6">
           {entries.length === 0 ? (
             <div className="text-center py-8 px-4 rounded-lg border-2 border-dashed border-muted-foreground/25">
@@ -149,7 +154,7 @@ export function EducationInfoSection({
                 className="space-y-4 p-4 rounded-lg border border-border bg-muted/20 relative"
               >
                 {/* Delete Button */}
-                {entries.length > 1 && (
+                {entries.length > 1 && isEditing && (
                   <Button
                     type="button"
                     variant="ghost"
@@ -173,6 +178,8 @@ export function EducationInfoSection({
                     }
                     placeholder="e.g., Massachusetts Institute of Technology"
                     className="h-10"
+                    disabled={!isEditing}
+                    readOnly={!isEditing}
                   />
                 </div>
 
@@ -188,6 +195,8 @@ export function EducationInfoSection({
                     }
                     placeholder="e.g., Bachelor of Science in Computer Science"
                     className="h-10"
+                    disabled={!isEditing}
+                    readOnly={!isEditing}
                   />
                 </div>
 
@@ -204,6 +213,8 @@ export function EducationInfoSection({
                       }
                       placeholder="e.g., Cambridge, MA"
                       className="h-10"
+                      disabled={!isEditing}
+                      readOnly={!isEditing}
                     />
                   </div>
                   <div className="space-y-2">
@@ -217,6 +228,8 @@ export function EducationInfoSection({
                       }
                       placeholder="e.g., 3.9/4.0"
                       className="h-10"
+                      disabled={!isEditing}
+                      readOnly={!isEditing}
                     />
                   </div>
                 </div>
@@ -234,6 +247,8 @@ export function EducationInfoSection({
                       }
                       placeholder="e.g., Sept 2019"
                       className="h-10"
+                      disabled={!isEditing}
+                      readOnly={!isEditing}
                     />
                   </div>
                   <div className="space-y-2">
@@ -247,6 +262,8 @@ export function EducationInfoSection({
                       }
                       placeholder="e.g., May 2023 or Expected May 2025"
                       className="h-10"
+                      disabled={!isEditing}
+                      readOnly={!isEditing}
                     />
                   </div>
                 </div>
@@ -263,6 +280,8 @@ export function EducationInfoSection({
                     }
                     placeholder="e.g., Data Structures, Algorithms, Machine Learning"
                     className="h-10"
+                    disabled={!isEditing}
+                    readOnly={!isEditing}
                   />
                 </div>
 
@@ -278,6 +297,8 @@ export function EducationInfoSection({
                     }
                     placeholder="e.g., Dean's List, Summa Cum Laude"
                     className="h-10"
+                    disabled={!isEditing}
+                    readOnly={!isEditing}
                   />
                 </div>
 
@@ -290,26 +311,30 @@ export function EducationInfoSection({
           )}
 
           {/* Add Education Button */}
-          <Button
-            type="button"
-            variant="outline"
-            className="w-full h-14 gap-3 border-2 border-dashed border-muted-foreground/25 hover:border-primary/50 hover:bg-primary/5 transition-all duration-200 text-muted-foreground hover:text-foreground"
-            onClick={handleAddEntry}
-          >
-            <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10">
-              <Plus className="w-4 h-4" />
-            </div>
-            <span className="font-medium">Add Education</span>
-          </Button>
+          {isEditing && (
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full h-14 gap-3 border-2 border-dashed border-muted-foreground/25 hover:border-primary/50 hover:bg-primary/5 transition-all duration-200 text-muted-foreground hover:text-foreground"
+              onClick={handleAddEntry}
+            >
+              <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10">
+                <Plus className="w-4 h-4" />
+              </div>
+              <span className="font-medium">Add Education</span>
+            </Button>
+          )}
 
           {/* Helper Tip */}
-          <div className="mt-4 p-3 rounded-md bg-muted/50 border border-border">
-            <p className="text-xs text-muted-foreground">
-              💡 <span className="font-medium">Pro tip:</span> Include your GPA
-              if it's above 3.5, and list relevant coursework that matches the
-              job requirements
-            </p>
-          </div>
+          {isEditing && (
+            <div className="mt-4 p-3 rounded-md bg-muted/50 border border-border">
+              <p className="text-xs text-muted-foreground">
+                💡 <span className="font-medium">Pro tip:</span> Include your GPA
+                if it's above 3.5, and list relevant coursework that matches the
+                job requirements
+              </p>
+            </div>
+          )}
         </CardContent>
       )}
     </Card>
