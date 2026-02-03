@@ -1,27 +1,29 @@
+// components/resume-editor/personal-info-section.tsx
+"use client";
+
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 
-// ✅ Define just the prop type you need
 interface PersonalInfoSectionProps {
   personalInfo: {
     fullName: string;
     email: string;
     phone: string;
     linkedin?: string;
-    location?: string;
     github?: string;
     portfolio?: string;
   };
   onChange: (updated: PersonalInfoSectionProps["personalInfo"]) => void;
 }
+
 export function PersonalInfoSection({
   personalInfo,
   onChange,
 }: PersonalInfoSectionProps) {
   return (
     <Card>
-      <CardHeader className="pb-1 pt-2 px-5">
+      <CardHeader className="pb-3 pt-4 px-5">
         <h3 className="font-semibold text-base">Personal Information</h3>
       </CardHeader>
 
@@ -32,7 +34,7 @@ export function PersonalInfoSection({
             <Input
               placeholder="John Developer"
               className="h-10"
-              value={personalInfo.fullName}
+              value={personalInfo.fullName || ""}
               onChange={(e) =>
                 onChange({ ...personalInfo, fullName: e.target.value })
               }
@@ -44,7 +46,7 @@ export function PersonalInfoSection({
             <Input
               placeholder="john@example.com"
               className="h-10"
-              value={personalInfo.email}
+              value={personalInfo.email || ""}
               onChange={(e) =>
                 onChange({ ...personalInfo, email: e.target.value })
               }
@@ -56,21 +58,9 @@ export function PersonalInfoSection({
             <Input
               placeholder="+1 (555) 123-4567"
               className="h-10"
-              value={personalInfo.phone}
+              value={personalInfo.phone || ""}
               onChange={(e) =>
                 onChange({ ...personalInfo, phone: e.target.value })
-              }
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label className="text-xs text-muted-foreground">Location</Label>
-            <Input
-              placeholder="San Francisco, CA"
-              className="h-10"
-              value={personalInfo.location}
-              onChange={(e) =>
-                onChange({ ...personalInfo, location: e.target.value })
               }
             />
           </div>
@@ -80,7 +70,7 @@ export function PersonalInfoSection({
             <Input
               placeholder="linkedin.com/in/johndeveloper"
               className="h-10"
-              value={personalInfo.linkedin}
+              value={personalInfo.linkedin || ""}
               onChange={(e) =>
                 onChange({ ...personalInfo, linkedin: e.target.value })
               }
@@ -92,7 +82,7 @@ export function PersonalInfoSection({
             <Input
               placeholder="github.com/johndeveloper"
               className="h-10"
-              value={personalInfo.github}
+              value={personalInfo.github || ""}
               onChange={(e) =>
                 onChange({ ...personalInfo, github: e.target.value })
               }

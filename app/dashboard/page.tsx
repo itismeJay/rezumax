@@ -5,12 +5,12 @@ import { Button } from "@/components/ui/button";
 import { resumes, stats } from "@/constants/dashboard/stats";
 import { ResumeCard } from "@/components/dashboard/resume-card";
 import { StatsCard } from "@/components/dashboard/stats-card";
-import { getCurrentUser } from "@/server/users";
+import { getCurrentUser, getCurrentUserWithData } from "@/server/users";
 import MotionWrapper from "@/components/dashboard/wrapper/motion-wrapper";
 import { CreateResumeButton } from "@/components/dashboard/create-resume-button"; // ← Import
 
 export default async function DashboardPage() {
-  const user = await getCurrentUser();
+  const user = await getCurrentUserWithData();
 
   return (
     <div className="min-h-screen bg-background p-4 lg:p-8">
