@@ -40,6 +40,7 @@ export function SkillsInfoSection({
   const [visible, setVisible] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const [showOptionalFields, setShowOptionalFields] = useState(false);
+  const [sectionName, setSectionName] = useState("Technical Skills");
 
   // Sync skills state when skillsInfo prop changes
   useEffect(() => {
@@ -65,7 +66,17 @@ export function SkillsInfoSection({
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <GripVertical className="w-4 h-4 text-muted-foreground cursor-grab active:cursor-grabbing" />
-            <h3 className="font-semibold text-base">Technical Skills</h3>
+            {isEditing ? (
+              <Input
+                value={sectionName}
+                onChange={(e) => setSectionName(e.target.value)}
+                onBlur={() => setIsEditing(false)}
+                autoFocus
+                className="h-7 w-40 text-base font-semibold p-1"
+              />
+            ) : (
+              <h3 className="font-semibold text-base">{sectionName}</h3>
+            )}
             <Pencil
               className="w-3.5 h-3.5 text-muted-foreground cursor-pointer hover:text-foreground transition-colors"
               onClick={() => setIsEditing(!isEditing)}
@@ -97,7 +108,7 @@ export function SkillsInfoSection({
       </CardHeader>
 
       {/* Content */}
-      {!collapsed && (
+      {!collapsed && visible && (
         <CardContent className="px-5 pb-5">
           <div className="space-y-4">
             {/* Core Fields */}

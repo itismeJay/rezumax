@@ -254,7 +254,7 @@ export default function ResumeEditorWrapper({
                 <CardContent className="px-5 pb-4">
                   <Textarea
                     placeholder="Paste job description here for AI-powered tailoring..."
-                    className="min-h-[80px] text-sm resize-none bg-background/50"
+                    className="min-h-[80px] text-sm resize-none bg-background/50 focus-visible:border-primary focus-visible:ring-primary/50"
                   />
                 </CardContent>
               </Card>

@@ -42,6 +42,7 @@ export function EducationInfoSection({
   const [collapsed, setCollapsed] = useState(false);
   const [visible, setVisible] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
+  const [sectionName, setSectionName] = useState("Education");
 
   // Sync entries state when educationInfo prop changes
   useEffect(() => {
@@ -100,7 +101,17 @@ export function EducationInfoSection({
             {/* Drag Handle */}
             <GripVertical className="w-4 h-4 text-muted-foreground cursor-grab active:cursor-grabbing" />
 
-            <h3 className="font-semibold text-base">Education</h3>
+            {isEditing ? (
+              <Input
+                value={sectionName}
+                onChange={(e) => setSectionName(e.target.value)}
+                onBlur={() => setIsEditing(false)}
+                autoFocus
+                className="h-7 w-32 text-base font-semibold p-1"
+              />
+            ) : (
+              <h3 className="font-semibold text-base">{sectionName}</h3>
+            )}
 
             <Pencil
               className="w-3.5 h-3.5 text-muted-foreground cursor-pointer hover:text-foreground transition-colors"
@@ -113,7 +124,7 @@ export function EducationInfoSection({
               {entries.length} {entries.length === 1 ? "entry" : "entries"}
             </span>
 
-            {/* Visibility Toggle */}
+            {/* Visibility Toggle - Disables fields so section is hidden in preview */}
             {visible ? (
               <Eye
                 className="w-4 h-4 cursor-pointer hover:text-foreground transition-colors"
@@ -178,7 +189,7 @@ export function EducationInfoSection({
                     }
                     placeholder="e.g., Massachusetts Institute of Technology"
                     className="h-10"
-                    disabled={!isEditing}
+                    disabled={!visible || !isEditing}
                     readOnly={!isEditing}
                   />
                 </div>
@@ -195,7 +206,7 @@ export function EducationInfoSection({
                     }
                     placeholder="e.g., Bachelor of Science in Computer Science"
                     className="h-10"
-                    disabled={!isEditing}
+                    disabled={!visible || !isEditing}
                     readOnly={!isEditing}
                   />
                 </div>
@@ -213,7 +224,7 @@ export function EducationInfoSection({
                       }
                       placeholder="e.g., Cambridge, MA"
                       className="h-10"
-                      disabled={!isEditing}
+                      disabled={!visible || !isEditing}
                       readOnly={!isEditing}
                     />
                   </div>
@@ -228,7 +239,7 @@ export function EducationInfoSection({
                       }
                       placeholder="e.g., 3.9/4.0"
                       className="h-10"
-                      disabled={!isEditing}
+                      disabled={!visible || !isEditing}
                       readOnly={!isEditing}
                     />
                   </div>
@@ -247,7 +258,7 @@ export function EducationInfoSection({
                       }
                       placeholder="e.g., Sept 2019"
                       className="h-10"
-                      disabled={!isEditing}
+                      disabled={!visible || !isEditing}
                       readOnly={!isEditing}
                     />
                   </div>
@@ -262,7 +273,7 @@ export function EducationInfoSection({
                       }
                       placeholder="e.g., May 2023 or Expected May 2025"
                       className="h-10"
-                      disabled={!isEditing}
+                      disabled={!visible || !isEditing}
                       readOnly={!isEditing}
                     />
                   </div>
@@ -280,7 +291,7 @@ export function EducationInfoSection({
                     }
                     placeholder="e.g., Data Structures, Algorithms, Machine Learning"
                     className="h-10"
-                    disabled={!isEditing}
+                    disabled={!visible || !isEditing}
                     readOnly={!isEditing}
                   />
                 </div>
@@ -297,7 +308,7 @@ export function EducationInfoSection({
                     }
                     placeholder="e.g., Dean's List, Summa Cum Laude"
                     className="h-10"
-                    disabled={!isEditing}
+                    disabled={!visible || !isEditing}
                     readOnly={!isEditing}
                   />
                 </div>

@@ -41,6 +41,7 @@ export function ProjectsInfoSection({
   const [collapsed, setCollapsed] = useState(false);
   const [visible, setVisible] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
+  const [sectionName, setSectionName] = useState("Projects");
 
   // Add new project entry
   const handleAddEntry = () => {
@@ -132,7 +133,17 @@ export function ProjectsInfoSection({
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <GripVertical className="w-4 h-4 text-muted-foreground cursor-grab active:cursor-grabbing" />
-            <h3 className="font-semibold text-base">Projects</h3>
+            {isEditing ? (
+              <Input
+                value={sectionName}
+                onChange={(e) => setSectionName(e.target.value)}
+                onBlur={() => setIsEditing(false)}
+                autoFocus
+                className="h-7 w-32 text-base font-semibold p-1"
+              />
+            ) : (
+              <h3 className="font-semibold text-base">{sectionName}</h3>
+            )}
             <Pencil
               className="w-3.5 h-3.5 text-muted-foreground cursor-pointer hover:text-foreground transition-colors"
               onClick={() => setIsEditing(!isEditing)}
@@ -161,9 +172,8 @@ export function ProjectsInfoSection({
           </div>
         </div>
       </CardHeader>
-
       {/* Content */}
-      {!collapsed && (
+      {!collapsed && visible && (
         <CardContent className="px-5 pb-5 space-y-6">
           {entries.length === 0 ? (
             <div className="text-center py-8 px-4 rounded-lg border-2 border-dashed border-muted-foreground/25">
