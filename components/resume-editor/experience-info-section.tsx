@@ -53,7 +53,7 @@ export function ExperienceInfoSection({
   // Add new experience entry
   const handleAddEntry = () => {
     const newEntry: ExperienceEntry = {
-      id: `exp-${Date.now()}`,
+      id: crypto.randomUUID(),
       position: "",
       company: "",
       location: "",
@@ -128,8 +128,13 @@ export function ExperienceInfoSection({
             <GripVertical className="w-4 h-4 text-muted-foreground cursor-grab active:cursor-grabbing" />
             <h3 className="font-semibold text-base">Experience</h3>
             <Pencil
-              className="w-3.5 h-3.5 text-muted-foreground cursor-pointer hover:text-foreground transition-colors"
+              className={`w-3.5 h-3.5 cursor-pointer transition-colors ${
+                isEditing
+                  ? "text-foreground"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
               onClick={() => setIsEditing(!isEditing)}
+              aria-label={isEditing ? "Exit edit mode" : "Enter edit mode"}
             />
           </div>
           <span className="text-xs text-muted-foreground">
@@ -145,7 +150,7 @@ export function ExperienceInfoSection({
             className="space-y-4 p-4 rounded-lg border border-border bg-muted/20 relative"
           >
             {/* Delete Entry Button */}
-            {entries.length > 1 && (
+            {entries.length > 1 && isEditing && (
               <Button
                 type="button"
                 variant="ghost"
@@ -169,6 +174,8 @@ export function ExperienceInfoSection({
                 onChange={(e) =>
                   handleFieldChange(entry.id, "position", e.target.value)
                 }
+                disabled={!isEditing}
+                readOnly={!isEditing}
               />
             </div>
 
@@ -184,6 +191,8 @@ export function ExperienceInfoSection({
                 onChange={(e) =>
                   handleFieldChange(entry.id, "company", e.target.value)
                 }
+                disabled={!isEditing}
+                readOnly={!isEditing}
               />
             </div>
 
@@ -200,6 +209,8 @@ export function ExperienceInfoSection({
                   onChange={(e) =>
                     handleFieldChange(entry.id, "location", e.target.value)
                   }
+                  disabled={!isEditing}
+                  readOnly={!isEditing}
                 />
               </div>
               <div className="space-y-2">
@@ -213,6 +224,8 @@ export function ExperienceInfoSection({
                   onChange={(e) =>
                     handleFieldChange(entry.id, "startDate", e.target.value)
                   }
+                  disabled={!isEditing}
+                  readOnly={!isEditing}
                 />
               </div>
               <div className="space-y-2">
@@ -226,6 +239,8 @@ export function ExperienceInfoSection({
                   onChange={(e) =>
                     handleFieldChange(entry.id, "endDate", e.target.value)
                   }
+                  disabled={!isEditing}
+                  readOnly={!isEditing}
                 />
               </div>
             </div>
@@ -246,8 +261,10 @@ export function ExperienceInfoSection({
                     onChange={(e) =>
                       handleBulletChange(entry.id, bulletIndex, e.target.value)
                     }
+                    disabled={!isEditing}
+                    readOnly={!isEditing}
                   />
-                  {entry.bullets.length > 1 && (
+                  {entry.bullets.length > 1 && isEditing && (
                     <Button
                       type="button"
                       variant="ghost"
@@ -262,16 +279,18 @@ export function ExperienceInfoSection({
               ))}
 
               {/* Add Bullet Button */}
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                className="w-full gap-2 border-dashed"
-                onClick={() => handleAddBullet(entry.id)}
-              >
-                <Plus className="w-3.5 h-3.5" />
-                Add Bullet Point
-              </Button>
+              {isEditing && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="w-full gap-2 border-dashed"
+                  onClick={() => handleAddBullet(entry.id)}
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  Add Bullet Point
+                </Button>
+              )}
             </div>
 
             {/* Entry Number Badge */}
@@ -282,17 +301,19 @@ export function ExperienceInfoSection({
         ))}
 
         {/* Add New Experience Entry Button */}
-        <Button
-          type="button"
-          variant="outline"
-          className="w-full h-14 gap-3 border-2 border-dashed border-muted-foreground/25 hover:border-primary/50 hover:bg-primary/5 transition-all duration-200 text-muted-foreground hover:text-foreground"
-          onClick={handleAddEntry}
-        >
-          <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10">
-            <Plus className="w-4 h-4" />
-          </div>
-          <span className="font-medium">Add Another Experience</span>
-        </Button>
+        {isEditing && (
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full h-14 gap-3 border-2 border-dashed border-muted-foreground/25 hover:border-primary/50 hover:bg-primary/5 transition-all duration-200 text-muted-foreground hover:text-foreground"
+            onClick={handleAddEntry}
+          >
+            <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10">
+              <Plus className="w-4 h-4" />
+            </div>
+            <span className="font-medium">Add Another Experience</span>
+          </Button>
+        )}
 
         {/* Job Description Helper (if provided) */}
         {jobDescription && (

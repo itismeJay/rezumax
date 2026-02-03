@@ -78,8 +78,13 @@ export function SkillsInfoSection({
               <h3 className="font-semibold text-base">{sectionName}</h3>
             )}
             <Pencil
-              className="w-3.5 h-3.5 text-muted-foreground cursor-pointer hover:text-foreground transition-colors"
+              className={`w-3.5 h-3.5 cursor-pointer transition-colors ${
+                isEditing
+                  ? "text-foreground"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
               onClick={() => setIsEditing(!isEditing)}
+              aria-label={isEditing ? "Exit edit mode" : "Enter edit mode"}
             />
           </div>
 
@@ -132,6 +137,8 @@ export function SkillsInfoSection({
                   onChange={(e) =>
                     handleFieldChange("languages", e.target.value)
                   }
+                  disabled={!isEditing}
+                  readOnly={!isEditing}
                 />
               </div>
 
@@ -147,6 +154,8 @@ export function SkillsInfoSection({
                   onChange={(e) =>
                     handleFieldChange("frameworks", e.target.value)
                   }
+                  disabled={!isEditing}
+                  readOnly={!isEditing}
                 />
               </div>
 
@@ -162,6 +171,8 @@ export function SkillsInfoSection({
                   onChange={(e) =>
                     handleFieldChange("developerTools", e.target.value)
                   }
+                  disabled={!isEditing}
+                  readOnly={!isEditing}
                 />
               </div>
 
@@ -177,6 +188,8 @@ export function SkillsInfoSection({
                   onChange={(e) =>
                     handleFieldChange("libraries", e.target.value)
                   }
+                  disabled={!isEditing}
+                  readOnly={!isEditing}
                 />
               </div>
             </div>
@@ -203,6 +216,8 @@ export function SkillsInfoSection({
                     onChange={(e) =>
                       handleFieldChange("databases", e.target.value)
                     }
+                    disabled={!isEditing}
+                    readOnly={!isEditing}
                   />
                 </div>
 
@@ -218,6 +233,8 @@ export function SkillsInfoSection({
                     onChange={(e) =>
                       handleFieldChange("cloudPlatforms", e.target.value)
                     }
+                    disabled={!isEditing}
+                    readOnly={!isEditing}
                   />
                 </div>
 
@@ -231,24 +248,28 @@ export function SkillsInfoSection({
                     className="h-10"
                     value={skills.other || ""}
                     onChange={(e) => handleFieldChange("other", e.target.value)}
+                    disabled={!isEditing}
+                    readOnly={!isEditing}
                   />
                 </div>
               </div>
             )}
 
             {/* Toggle Optional Fields Button */}
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              className="w-full gap-2 border-dashed"
-              onClick={() => setShowOptionalFields(!showOptionalFields)}
-            >
-              <Plus className="w-3.5 h-3.5" />
-              {showOptionalFields
-                ? "Hide Optional Categories"
-                : "Add More Categories"}
-            </Button>
+            {isEditing && (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="w-full gap-2 border-dashed"
+                onClick={() => setShowOptionalFields(!showOptionalFields)}
+              >
+                <Plus className="w-3.5 h-3.5" />
+                {showOptionalFields
+                  ? "Hide Optional Categories"
+                  : "Add More Categories"}
+              </Button>
+            )}
 
             {/* Helper Tips */}
             <div className="space-y-2 mt-4">

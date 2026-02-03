@@ -1,7 +1,7 @@
 // app/edit/[resumeId]/page.tsx
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import Link from "next/link";
 import { toast } from "sonner";
 import { useDebouncedCallback } from "use-debounce";
@@ -30,7 +30,6 @@ import { ProjectsInfoSection } from "./projects-info-section";
 import { SkillsInfoSection } from "./skills-info-section";
 import { ResumePreview } from "./resume-preview";
 import axios from "axios";
-import { set } from "lodash";
 
 // ----------------------------------------------
 // Props Interface
@@ -54,6 +53,9 @@ export default function ResumeEditorWrapper({
   const [saveStatus, setSaveStatus] = useState<"saving" | "saved" | null>(null);
   const [isSaving, setIsSaving] = useState<boolean>(false);
   const [zoomLevel, setZoomLevel] = useState(0.75);
+
+  // Ref to store debounced auto-save function for cancellation
+  const debouncedAutoSaveRef = useRef<ReturnType<typeof useDebouncedCallback> | null>(null);
 
   // --------------------------------------------
   // Auto-save Function (Debounced)
@@ -87,12 +89,18 @@ export default function ResumeEditorWrapper({
     3000, // Wait 3 second after typing stops
   );
 
+  // Store debounced function in ref for access in handleSaveClick
+  debouncedAutoSaveRef.current = debouncedAutoSave;
+
   // --------------------------------------------
   // Handler for saving via button
   // --------------------------------------------
-
-  // In your parent component (ResumeEditorWrapper)
   const handleSaveClick = async () => {
+    // Cancel any pending debounced auto-save to prevent race condition
+    if (debouncedAutoSaveRef.current) {
+      debouncedAutoSaveRef.current.cancel();
+    }
+
     setIsSaving(true);
     setSaveStatus("saving");
 
