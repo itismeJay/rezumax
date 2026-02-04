@@ -14,6 +14,8 @@ import {
   Trash2,
   GripVertical,
   Sparkles,
+  Check,
+  X,
 } from "lucide-react";
 
 interface SkillsData {
@@ -29,23 +31,45 @@ interface SkillsData {
 interface SkillsInfoSectionProps {
   skillsInfo: SkillsData;
   onChange: (updated: SkillsData) => void;
+  visible?: boolean;
+  onVisibilityChange?: (visible: boolean) => void;
+  sectionName?: string;
+  onSectionNameChange?: (name: string) => void;
 }
 
 export function SkillsInfoSection({
   skillsInfo,
   onChange,
+  visible: externalVisible,
+  onVisibilityChange,
+  sectionName: externalSectionName,
+  onSectionNameChange,
 }: SkillsInfoSectionProps) {
   const [skills, setSkills] = useState<SkillsData>(skillsInfo);
   const [collapsed, setCollapsed] = useState(false);
-  const [visible, setVisible] = useState(true);
-  const [isEditing, setIsEditing] = useState(false);
+  const [visible, setVisible] = useState(externalVisible ?? true);
+  const [isRenamingSection, setIsRenamingSection] = useState(false);
+  const [tempSectionName, setTempSectionName] = useState("Technical Skills");
   const [showOptionalFields, setShowOptionalFields] = useState(false);
-  const [sectionName, setSectionName] = useState("Technical Skills");
+
+  const sectionName = externalSectionName || "Technical Skills";
+
+  // Sync visibility state when external prop changes
+  useEffect(() => {
+    if (externalVisible !== undefined) {
+      setVisible(externalVisible);
+    }
+  }, [externalVisible]);
 
   // Sync skills state when skillsInfo prop changes
   useEffect(() => {
     setSkills(skillsInfo);
   }, [skillsInfo]);
+
+  // Sync tempSectionName with sectionName prop
+  useEffect(() => {
+    setTempSectionName(sectionName);
+  }, [sectionName]);
 
   // Update skill field
   const handleFieldChange = (field: keyof SkillsData, value: string) => {
@@ -59,28 +83,70 @@ export function SkillsInfoSection({
     (val) => val && val.trim(),
   ).length;
 
+  const handleToggleVisibility = () => {
+    const newVisible = !visible;
+    setVisible(newVisible);
+    if (onVisibilityChange) {
+      onVisibilityChange(newVisible);
+    }
+  };
+
+  // Handle rename section
+  const handleStartRename = () => {
+    setTempSectionName(sectionName);
+    setIsRenamingSection(true);
+  };
+
+  const handleConfirmRename = () => {
+    if (onSectionNameChange) {
+      onSectionNameChange(tempSectionName);
+    }
+    setIsRenamingSection(false);
+  };
+
+  const handleCancelRename = () => {
+    setTempSectionName(sectionName);
+    setIsRenamingSection(false);
+  };
+
   return (
-    <Card className="border border-border shadow-none">
+    <Card
+      className={`border border-border shadow-none ${!visible ? "opacity-50" : ""}`}
+    >
       {/* Header */}
       <CardHeader className="pb-3 pt-4 px-5">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <GripVertical className="w-4 h-4 text-muted-foreground cursor-grab active:cursor-grabbing" />
-            {isEditing ? (
+
+            {isRenamingSection ? (
               <Input
-                value={sectionName}
-                onChange={(e) => setSectionName(e.target.value)}
-                onBlur={() => setIsEditing(false)}
+                value={tempSectionName}
+                onChange={(e) => setTempSectionName(e.target.value)}
                 autoFocus
                 className="h-7 w-40 text-base font-semibold p-1"
               />
             ) : (
               <h3 className="font-semibold text-base">{sectionName}</h3>
             )}
-            <Pencil
-              className="w-3.5 h-3.5 text-muted-foreground cursor-pointer hover:text-foreground transition-colors"
-              onClick={() => setIsEditing(!isEditing)}
-            />
+
+            {!isRenamingSection ? (
+              <Pencil
+                className="w-3.5 h-3.5 text-muted-foreground cursor-pointer hover:text-foreground transition-colors"
+                onClick={handleStartRename}
+              />
+            ) : (
+              <div className="flex items-center gap-2">
+                <Check
+                  className="w-4 h-4 text-green-500 cursor-pointer hover:text-green-600 transition-colors"
+                  onClick={handleConfirmRename}
+                />
+                <X
+                  className="w-4 h-4 text-red-500 cursor-pointer hover:text-red-600 transition-colors"
+                  onClick={handleCancelRename}
+                />
+              </div>
+            )}
           </div>
 
           <div className="flex items-center gap-3 text-muted-foreground">
@@ -91,14 +157,15 @@ export function SkillsInfoSection({
             {visible ? (
               <Eye
                 className="w-4 h-4 cursor-pointer hover:text-foreground transition-colors"
-                onClick={() => setVisible(!visible)}
+                onClick={handleToggleVisibility}
               />
             ) : (
               <EyeOff
                 className="w-4 h-4 cursor-pointer hover:text-foreground transition-colors"
-                onClick={() => setVisible(!visible)}
+                onClick={handleToggleVisibility}
               />
             )}
+
             <ChevronUp
               className={`w-4 h-4 cursor-pointer hover:text-foreground transition-all ${collapsed ? "rotate-180" : ""}`}
               onClick={() => setCollapsed(!collapsed)}
@@ -108,7 +175,7 @@ export function SkillsInfoSection({
       </CardHeader>
 
       {/* Content */}
-      {!collapsed && visible && (
+      {!collapsed && (
         <CardContent className="px-5 pb-5">
           <div className="space-y-4">
             {/* Core Fields */}

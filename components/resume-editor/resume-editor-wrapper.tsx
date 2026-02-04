@@ -30,7 +30,6 @@ import { ProjectsInfoSection } from "./projects-info-section";
 import { SkillsInfoSection } from "./skills-info-section";
 import { ResumePreview } from "./resume-preview";
 import axios from "axios";
-import { set } from "lodash";
 
 // ----------------------------------------------
 // Props Interface
@@ -54,6 +53,14 @@ export default function ResumeEditorWrapper({
   const [saveStatus, setSaveStatus] = useState<"saving" | "saved" | null>(null);
   const [isSaving, setIsSaving] = useState<boolean>(false);
   const [zoomLevel, setZoomLevel] = useState(0.75);
+
+  // Section visibility states
+  const [sectionsVisibility, setSectionsVisibility] = useState({
+    education: true,
+    experience: true,
+    projects: true,
+    skills: true,
+  });
 
   // --------------------------------------------
   // Auto-save Function (Debounced)
@@ -84,14 +91,12 @@ export default function ResumeEditorWrapper({
         setSaveStatus(null);
       }
     },
-    3000, // Wait 3 second after typing stops
+    2000, // Reduced from 3000 to 2000ms for faster saves
   );
 
   // --------------------------------------------
   // Handler for saving via button
   // --------------------------------------------
-
-  // In your parent component (ResumeEditorWrapper)
   const handleSaveClick = async () => {
     setIsSaving(true);
     setSaveStatus("saving");
@@ -137,25 +142,82 @@ export default function ResumeEditorWrapper({
   const handleExperienceInfoChange = (
     experienceInfo: ResumeData["experience"],
   ) => {
+    console.log("📝 Experience changed:", experienceInfo);
     const updatedResume = { ...editableResume, experience: experienceInfo };
     setEditableResume(updatedResume);
     debouncedAutoSave(updatedResume);
   };
+
   const handleProjectsInfoSection = (projectsInfo: ResumeData["projects"]) => {
     const updatedResume = { ...editableResume, projects: projectsInfo };
     setEditableResume(updatedResume);
     debouncedAutoSave(updatedResume);
   };
+
   const handleSkillsInfoSection = (skillsInfo: ResumeData["skills"]) => {
     const updatedResume = { ...editableResume, skills: skillsInfo };
     setEditableResume(updatedResume);
     debouncedAutoSave(updatedResume);
   };
+
+  // --------------------------------------------
+  // Section Visibility Handlers
+  // --------------------------------------------
+  const handleEducationVisibilityChange = (visible: boolean) => {
+    setSectionsVisibility((prev) => ({ ...prev, education: visible }));
+  };
+
+  const handleExperienceVisibilityChange = (visible: boolean) => {
+    setSectionsVisibility((prev) => ({ ...prev, experience: visible }));
+  };
+
+  const handleProjectsVisibilityChange = (visible: boolean) => {
+    setSectionsVisibility((prev) => ({ ...prev, projects: visible }));
+  };
+
+  const handleSkillsVisibilityChange = (visible: boolean) => {
+    setSectionsVisibility((prev) => ({ ...prev, skills: visible }));
+  };
+
+  // --------------------------------------------
+  // Prepare data for preview (filter out invisible sections)
+  // --------------------------------------------
+  const previewData: ResumeData = {
+    ...editableResume,
+    education: sectionsVisibility.education ? editableResume.education : [],
+    experience: sectionsVisibility.experience ? editableResume.experience : [],
+    projects: sectionsVisibility.projects ? editableResume.projects : [],
+    skills: sectionsVisibility.skills
+      ? editableResume.skills
+      : {
+          languages: "",
+          frameworks: "",
+          developerTools: "",
+          libraries: "",
+        },
+  };
+
   // --------------------------------------------
   // Debug Logs
   // --------------------------------------------
   console.log("ResumeData in Wrapper:", resumeData);
   console.log("editableResume in Wrapper:", editableResume);
+  console.log("Sections Visibility:", sectionsVisibility);
+
+  const handleSectionNameChange = (
+    section: keyof NonNullable<ResumeData["sectionNames"]>,
+    newName: string,
+  ) => {
+    const updatedResume = {
+      ...editableResume,
+      sectionNames: {
+        ...editableResume.sectionNames,
+        [section]: newName,
+      },
+    };
+    setEditableResume(updatedResume);
+    debouncedAutoSave(updatedResume);
+  };
 
   // --------------------------------------------
   // JSX
@@ -267,18 +329,42 @@ export default function ResumeEditorWrapper({
               <EducationInfoSection
                 educationInfo={editableResume.education}
                 onChange={handleEducationInfoChange}
+                visible={sectionsVisibility.education}
+                onVisibilityChange={handleEducationVisibilityChange}
+                sectionName={editableResume.sectionNames?.education}
+                onSectionNameChange={(name) =>
+                  handleSectionNameChange("education", name)
+                }
               />
               <ExperienceInfoSection
                 experienceInfo={editableResume.experience}
                 onChange={handleExperienceInfoChange}
+                visible={sectionsVisibility.experience}
+                onVisibilityChange={handleExperienceVisibilityChange}
+                sectionName={editableResume.sectionNames?.experience}
+                onSectionNameChange={(name) =>
+                  handleSectionNameChange("experience", name)
+                }
               />
               <ProjectsInfoSection
                 projectsInfo={editableResume.projects}
                 onChange={handleProjectsInfoSection}
+                visible={sectionsVisibility.projects}
+                onVisibilityChange={handleProjectsVisibilityChange}
+                sectionName={editableResume.sectionNames?.projects}
+                onSectionNameChange={(name) =>
+                  handleSectionNameChange("projects", name)
+                }
               />
               <SkillsInfoSection
                 skillsInfo={editableResume.skills}
                 onChange={handleSkillsInfoSection}
+                visible={sectionsVisibility.skills}
+                onVisibilityChange={handleSkillsVisibilityChange}
+                sectionName={editableResume.sectionNames?.skills}
+                onSectionNameChange={(name) =>
+                  handleSectionNameChange("skills", name)
+                }
               />
 
               <div className="h-8" />
@@ -322,7 +408,7 @@ export default function ResumeEditorWrapper({
           <div className="flex-1 overflow-auto py-5">
             <ResumePreview
               template={resumeData.template}
-              content={editableResume}
+              content={previewData}
               scale={zoomLevel}
             />
           </div>

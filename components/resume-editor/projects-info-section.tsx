@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -14,6 +14,10 @@ import {
   Plus,
   Trash2,
   GripVertical,
+  Check,
+  X,
+  Sparkles,
+  Loader2,
 } from "lucide-react";
 
 interface ProjectEntry {
@@ -23,25 +27,62 @@ interface ProjectEntry {
   startDate?: string;
   endDate?: string;
   bullets: string[];
-  link?: string; // Optional project link
+  projectLink?: string; // Optional project link
 }
 
 interface ProjectsInfoSectionProps {
   projectsInfo: ProjectEntry[];
   onChange: (updated: ProjectEntry[]) => void;
   jobDescription?: string;
+  visible?: boolean; // ← added for parent control
+  onVisibilityChange?: (visible: boolean) => void; // ← added for parent callback
+  sectionName?: string; // ← added for custom section name
+  onSectionNameChange?: (name: string) => void; // ← added for section name change callback
 }
 
 export function ProjectsInfoSection({
   projectsInfo,
   onChange,
   jobDescription = "",
+  visible: externalVisible,
+  onVisibilityChange,
+  sectionName: externalSectionName,
+  onSectionNameChange,
 }: ProjectsInfoSectionProps) {
   const [entries, setEntries] = useState<ProjectEntry[]>(projectsInfo);
   const [collapsed, setCollapsed] = useState(false);
-  const [visible, setVisible] = useState(true);
-  const [isEditing, setIsEditing] = useState(false);
-  const [sectionName, setSectionName] = useState("Projects");
+  const [visible, setVisible] = useState<boolean>(externalVisible ?? true);
+  const [isRenamingSection, setIsRenamingSection] = useState(false);
+  const [tempSectionName, setTempSectionName] = useState("Projects");
+  const [loadingBullet, setLoadingBullet] = useState<string | null>(null);
+
+  const sectionName = externalSectionName || "Projects";
+
+  // Sync entries state when projectsInfo prop changes
+  useEffect(() => {
+    setEntries(projectsInfo);
+  }, [projectsInfo]);
+
+  // Sync visible state with external prop
+  useEffect(() => {
+    if (externalVisible !== undefined) {
+      setVisible(externalVisible);
+    }
+  }, [externalVisible]);
+
+  // Sync tempSectionName with sectionName prop
+  useEffect(() => {
+    setTempSectionName(sectionName);
+  }, [sectionName]);
+
+  // Handle toggle visibility
+  const handleToggleVisibility = () => {
+    const newVisible = !visible;
+    setVisible(newVisible);
+    if (onVisibilityChange) {
+      onVisibilityChange(newVisible);
+    }
+  };
 
   // Add new project entry
   const handleAddEntry = () => {
@@ -52,7 +93,7 @@ export function ProjectsInfoSection({
       startDate: "",
       endDate: "",
       bullets: [""],
-      link: "",
+      projectLink: "",
     };
 
     const updated = [...entries, newEntry];
@@ -126,28 +167,108 @@ export function ProjectsInfoSection({
     onChange(updated);
   };
 
+  // Handle rename section
+  const handleStartRename = () => {
+    setTempSectionName(sectionName);
+    setIsRenamingSection(true);
+  };
+
+  const handleConfirmRename = () => {
+    if (onSectionNameChange) {
+      onSectionNameChange(tempSectionName);
+    }
+    setIsRenamingSection(false);
+  };
+
+  const handleCancelRename = () => {
+    setTempSectionName(sectionName);
+    setIsRenamingSection(false);
+  };
+
+  // Generate bullet point with AI
+  const handleGenerateBullet = async (entryId: string, bulletIndex: number) => {
+    const entry = entries.find((e) => e.id === entryId);
+    if (!entry) return;
+
+    const bulletKey = `${entryId}-${bulletIndex}`;
+    setLoadingBullet(bulletKey);
+
+    try {
+      // Simulate AI generation (replace with actual API call)
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+
+      const generatedBullet = `Developed key feature for ${entry.name} using ${entry.technologies}`;
+      handleBulletChange(entryId, bulletIndex, generatedBullet);
+    } catch (error) {
+      console.error("Failed to generate bullet:", error);
+    } finally {
+      setLoadingBullet(null);
+    }
+  };
+
+  // Generate all bullets for an entry
+  const handleGenerateAllBullets = async (entryId: string) => {
+    const entry = entries.find((e) => e.id === entryId);
+    if (!entry) return;
+
+    setLoadingBullet(`${entryId}-all`);
+
+    try {
+      // Simulate AI generation (replace with actual API call)
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+
+      const generatedBullets = [
+        `Built ${entry.name} using ${entry.technologies} to solve real-world problems`,
+        `Implemented key features that improved user experience and functionality`,
+        `Collaborated with team members to deliver project on schedule`,
+      ];
+
+      handleFieldChange(entryId, "bullets", generatedBullets);
+    } catch (error) {
+      console.error("Failed to generate bullets:", error);
+    } finally {
+      setLoadingBullet(null);
+    }
+  };
+
   return (
-    <Card className="border border-border shadow-none">
+    <Card
+      className={`border border-border shadow-none ${!visible ? "opacity-50" : ""}`}
+    >
       {/* Header */}
       <CardHeader className="pb-3 pt-4 px-5">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <GripVertical className="w-4 h-4 text-muted-foreground cursor-grab active:cursor-grabbing" />
-            {isEditing ? (
+
+            {isRenamingSection ? (
               <Input
-                value={sectionName}
-                onChange={(e) => setSectionName(e.target.value)}
-                onBlur={() => setIsEditing(false)}
+                value={tempSectionName}
+                onChange={(e) => setTempSectionName(e.target.value)}
                 autoFocus
-                className="h-7 w-32 text-base font-semibold p-1"
+                className="h-7 w-40 text-base font-semibold p-1"
               />
             ) : (
               <h3 className="font-semibold text-base">{sectionName}</h3>
             )}
-            <Pencil
-              className="w-3.5 h-3.5 text-muted-foreground cursor-pointer hover:text-foreground transition-colors"
-              onClick={() => setIsEditing(!isEditing)}
-            />
+
+            {!isRenamingSection ? (
+              <Pencil
+                className="w-3.5 h-3.5 text-muted-foreground cursor-pointer hover:text-foreground transition-colors"
+                onClick={handleStartRename}
+              />
+            ) : (
+              <div className="flex items-center gap-2">
+                <Check
+                  className="w-4 h-4 text-green-500 cursor-pointer hover:text-green-600 transition-colors"
+                  onClick={handleConfirmRename}
+                />
+                <X
+                  className="w-4 h-4 text-red-500 cursor-pointer hover:text-red-600 transition-colors"
+                  onClick={handleCancelRename}
+                />
+              </div>
+            )}
           </div>
 
           <div className="flex items-center gap-3 text-muted-foreground">
@@ -157,23 +278,26 @@ export function ProjectsInfoSection({
             {visible ? (
               <Eye
                 className="w-4 h-4 cursor-pointer hover:text-foreground transition-colors"
-                onClick={() => setVisible(!visible)}
+                onClick={handleToggleVisibility}
               />
             ) : (
               <EyeOff
                 className="w-4 h-4 cursor-pointer hover:text-foreground transition-colors"
-                onClick={() => setVisible(!visible)}
+                onClick={handleToggleVisibility}
               />
             )}
             <ChevronUp
-              className={`w-4 h-4 cursor-pointer hover:text-foreground transition-all ${collapsed ? "rotate-180" : ""}`}
+              className={`w-4 h-4 cursor-pointer hover:text-foreground transition-all ${
+                collapsed ? "rotate-180" : ""
+              }`}
               onClick={() => setCollapsed(!collapsed)}
             />
           </div>
         </div>
       </CardHeader>
+
       {/* Content */}
-      {!collapsed && visible && (
+      {!collapsed && (
         <CardContent className="px-5 pb-5 space-y-6">
           {entries.length === 0 ? (
             <div className="text-center py-8 px-4 rounded-lg border-2 border-dashed border-muted-foreground/25">
@@ -188,7 +312,7 @@ export function ProjectsInfoSection({
             entries.map((entry, entryIndex) => (
               <div
                 key={entry.id}
-                className="space-y-4 p-4 rounded-lg border border-border bg-muted/20 relative"
+                className="space-y-4 p-4 rounded-lg border border-border relative"
               >
                 {/* Delete Button */}
                 {entries.length > 1 && (
@@ -272,9 +396,13 @@ export function ProjectsInfoSection({
                     <Input
                       placeholder="e.g., github.com/..."
                       className="h-10"
-                      value={entry.link || ""}
+                      value={entry.projectLink || ""}
                       onChange={(e) =>
-                        handleFieldChange(entry.id, "link", e.target.value)
+                        handleFieldChange(
+                          entry.id,
+                          "projectLink",
+                          e.target.value,
+                        )
                       }
                     />
                   </div>
@@ -282,33 +410,84 @@ export function ProjectsInfoSection({
 
                 {/* Bullets Section */}
                 <div className="space-y-3">
-                  <Label className="text-xs text-muted-foreground font-medium">
-                    Key Features & Achievements
-                  </Label>
+                  <div className="flex items-center justify-between">
+                    <Label className="text-xs text-muted-foreground font-medium">
+                      Key Features & Achievements
+                    </Label>
+                    <Button
+                      asChild
+                      variant="gradient"
+                      size="sm"
+                      className="group gap-1.5 text-xs px-3 py-2 rounded-md shadow-md hover:shadow-lg active:scale-[0.98] transition-all duration-300 bg-gradient-to-r from-primary via-secondary to-primary bg-[length:200%_100%] hover:bg-[position:100%_0]"
+                    >
+                      <button
+                        type="button"
+                        className="flex items-center gap-1.5"
+                        onClick={() => handleGenerateAllBullets(entry.id)}
+                        disabled={loadingBullet === `${entry.id}-all`}
+                      >
+                        {loadingBullet === `${entry.id}-all` ? (
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : (
+                          <Sparkles className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                        )}
+                        Suggest Bullet Point
+                      </button>
+                    </Button>
+                  </div>
 
                   {entry.bullets.map((bullet, bulletIndex) => (
                     <div key={bulletIndex} className="flex gap-2 items-start">
                       <span className="text-muted-foreground mt-3 text-xs">
                         •
                       </span>
-                      <Textarea
-                        placeholder="Describe a key feature, achievement, or technical challenge..."
-                        className="min-h-[60px] text-sm resize-none flex-1"
-                        value={bullet}
-                        onChange={(e) =>
-                          handleBulletChange(
-                            entry.id,
-                            bulletIndex,
-                            e.target.value,
-                          )
-                        }
-                      />
+                      <div className="flex-1 relative">
+                        <Textarea
+                          placeholder="Describe a key feature, achievement, or technical challenge..."
+                          className="min-h-[80px] text-sm resize-none pr-28 pb-10"
+                          value={bullet}
+                          onChange={(e) =>
+                            handleBulletChange(
+                              entry.id,
+                              bulletIndex,
+                              e.target.value,
+                            )
+                          }
+                        />
+
+                        {/* Button inside the Textarea */}
+                        <Button
+                          asChild
+                          variant="gradient"
+                          size="sm"
+                          className="absolute bottom-2 right-2 group gap-1 text-xs px-3 py-1.5 rounded-md shadow-md border hover:shadow-lg active:scale-[0.98] transition-all duration-300 bg-gradient-to-r from-primary via-secondary to-primary bg-[length:200%_100%] hover:bg-[position:100%_0]"
+                        >
+                          <button
+                            type="button"
+                            className="flex items-center gap-1"
+                            onClick={() =>
+                              handleGenerateBullet(entry.id, bulletIndex)
+                            }
+                            disabled={
+                              loadingBullet === `${entry.id}-${bulletIndex}`
+                            }
+                          >
+                            {loadingBullet === `${entry.id}-${bulletIndex}` ? (
+                              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                            ) : (
+                              <Sparkles className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                            )}
+                            Improve with AI
+                          </button>
+                        </Button>
+                      </div>
+
                       {entry.bullets.length > 1 && (
                         <Button
                           type="button"
                           variant="ghost"
                           size="icon"
-                          className="h-8 w-8 mt-2 text-muted-foreground hover:text-destructive"
+                          className="h-8 w-8 text-muted-foreground hover:text-destructive"
                           onClick={() =>
                             handleDeleteBullet(entry.id, bulletIndex)
                           }

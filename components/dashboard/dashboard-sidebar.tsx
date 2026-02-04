@@ -75,7 +75,7 @@ export function DashboardSidebar() {
           collapsed
             ? "w-20 -translate-x-full lg:translate-x-0"
             : "w-64 translate-x-0",
-          "lg:relative"
+          "lg:relative",
         )}
       >
         <div className="flex flex-col h-full px-3 py-4">
@@ -91,7 +91,7 @@ export function DashboardSidebar() {
                   "font-bold text-lg whitespace-nowrap transition-all duration-300",
                   collapsed
                     ? "opacity-0 w-0 overflow-hidden"
-                    : "opacity-100 w-auto"
+                    : "opacity-100 w-auto",
                 )}
               >
                 RezumaX
@@ -107,7 +107,7 @@ export function DashboardSidebar() {
               <ChevronLeft
                 className={cn(
                   "w-6 h-6 transition-transform duration-300",
-                  collapsed && "rotate-180"
+                  collapsed && "rotate-180",
                 )}
               />
             </Button>
@@ -126,7 +126,7 @@ export function DashboardSidebar() {
                     activeLink === item.href
                       ? "bg-primary text-primary-foreground"
                       : "text-muted-foreground hover:bg-muted hover:text-foreground",
-                    collapsed && "justify-center"
+                    collapsed && "justify-center",
                   )}
                 >
                   <item.icon className="w-5 h-5 shrink-0" />
@@ -136,7 +136,7 @@ export function DashboardSidebar() {
                       "whitespace-nowrap transition-all duration-300",
                       collapsed
                         ? "opacity-0 w-0 overflow-hidden"
-                        : "opacity-100 w-auto"
+                        : "opacity-100 w-auto",
                     )}
                   >
                     {item.label}
@@ -151,7 +151,7 @@ export function DashboardSidebar() {
             <div
               className={cn(
                 "flex items-center gap-3 mb-4",
-                collapsed && "justify-center"
+                collapsed && "justify-center",
               )}
             >
               <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center">
@@ -163,7 +163,7 @@ export function DashboardSidebar() {
                   "transition-all duration-300",
                   collapsed
                     ? "opacity-0 w-0 overflow-hidden"
-                    : "opacity-100 w-auto"
+                    : "opacity-100 w-auto",
                 )}
               >
                 <p className="text-sm font-medium truncate">John Developer</p>
@@ -178,9 +178,9 @@ export function DashboardSidebar() {
               variant="ghost"
               disabled={loading}
               className={cn(
-                "w-full gap-2 transition-all duration-300",
+                "w-full gap-2 transition-all cursor-pointer duration-300",
                 collapsed ? "justify-center" : "justify-start",
-                "text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                "text-muted-foreground hover:text-destructive hover:bg-destructive/10",
               )}
             >
               {loading ? (
@@ -193,7 +193,7 @@ export function DashboardSidebar() {
                       "transition-all duration-300 cursor-pointer",
                       collapsed
                         ? "opacity-0 w-0 overflow-hidden"
-                        : "opacity-100 w-auto"
+                        : "opacity-100 w-auto",
                     )}
                   >
                     Log out

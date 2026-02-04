@@ -16,7 +16,7 @@ export interface ResumeData {
     degree: string;
     location: string;
     startDate: string;
-    endDate: string;
+    graduateDate: string;
     gpa?: string;
   }>;
   experience: Array<{
@@ -34,6 +34,7 @@ export interface ResumeData {
     technologies: string;
     startDate?: string;
     endDate?: string;
+    projectLink?: string;
     bullets: string[];
   }>;
   skills: {
@@ -41,6 +42,14 @@ export interface ResumeData {
     frameworks: string;
     developerTools: string;
     libraries: string;
+  };
+
+  // 👇 ADD THIS - Section names for all customizable sections
+  sectionNames?: {
+    education?: string;
+    experience?: string;
+    projects?: string;
+    skills?: string;
   };
 }
 
@@ -61,7 +70,7 @@ export const resumeDataSchema = z.object({
       degree: z.string(),
       location: z.string(),
       startDate: z.string(),
-      endDate: z.string(),
+      graduateDate: z.string(), // 👈 Fixed: was "endDate" in your schema
       gpa: z.string().optional(),
     }),
   ),
@@ -83,6 +92,7 @@ export const resumeDataSchema = z.object({
       technologies: z.string(),
       startDate: z.string().optional(),
       endDate: z.string().optional(),
+      projectLink: z.string().optional(), // 👈 Added this
       bullets: z.array(z.string()),
     }),
   ),
@@ -92,6 +102,16 @@ export const resumeDataSchema = z.object({
     developerTools: z.string(),
     libraries: z.string(),
   }),
+
+  // 👇 ADD THIS - Zod schema for section names
+  sectionNames: z
+    .object({
+      education: z.string().optional(),
+      experience: z.string().optional(),
+      projects: z.string().optional(),
+      skills: z.string().optional(),
+    })
+    .optional(),
 });
 
 // Type for the full database row

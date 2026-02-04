@@ -28,7 +28,7 @@ export const Logout = () => {
       onClick={handleLogout}
       disabled={loading}
       variant="outline"
-      className="flex items-center justify-center"
+      className="flex items-center justify-center cursor-pointer"
     >
       {loading ? (
         <Loader2 className="h-4 w-4 animate-spin" />
