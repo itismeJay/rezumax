@@ -71,7 +71,7 @@ export default function JakeRyanResume({ data }: JakeRyanResumeProps) {
               borderBottom: "0.75px solid #000",
             }}
           >
-            Education
+            {data.sectionNames?.education || "Education"}
           </h2>
 
           {data?.education?.map((edu, index) => (
@@ -104,7 +104,8 @@ export default function JakeRyanResume({ data }: JakeRyanResumeProps) {
                   {edu.gpa ? `(GPA: ${edu.gpa})` : ""}
                 </div>
                 <div>
-                  {edu.startDate || "Aug. 2018"} – {edu.endDate || "May 2021"}
+                  {edu.startDate || "Aug. 2018"} –{" "}
+                  {edu.graduateDate || "May 2021"}
                 </div>
               </div>
             </div>
@@ -124,180 +125,82 @@ export default function JakeRyanResume({ data }: JakeRyanResumeProps) {
               borderBottom: "0.75px solid #000",
             }}
           >
-            Experience
+            {data.sectionNames?.experience || "Experience"}
           </h2>
 
-          {/* Job 1 */}
-          <div
-            style={{
-              marginTop: "5px",
-              marginBottom: "7px",
-              paddingLeft: "12px",
-              paddingRight: "12px",
-            }}
-          >
+          {/* Map through all experience entries */}
+          {data.experience?.map((exp, index) => (
             <div
-              className="flex justify-between"
-              style={{ marginBottom: "1px" }}
-            >
-              <div style={{ fontWeight: "bold", fontSize: "10.5pt" }}>
-                Undergraduate Research Assistant
-              </div>
-              <div style={{ fontSize: "10.5pt" }}>June 2020 – Present</div>
-            </div>
-            <div
-              className="flex justify-between"
+              key={exp.id || index}
               style={{
-                fontSize: "9.5pt",
-                fontStyle: "italic",
-                marginBottom: "3px",
-              }}
-            >
-              <div>Texas A&M University</div>
-              <div>College Station, TX</div>
-            </div>
-            <ul
-              style={{
-                listStyleType: "disc",
-                marginLeft: "15px",
-                fontSize: "9.5pt",
-                lineHeight: "1.25",
+                marginTop: "5px",
+                marginBottom: "7px",
                 paddingLeft: "12px",
                 paddingRight: "12px",
               }}
             >
-              <li style={{ marginBottom: "1.5px", paddingLeft: "2px" }}>
-                Developed a REST API using FastAPI and PostgreSQL to store data
-                from learning management systems
-              </li>
-              <li style={{ marginBottom: "1.5px", paddingLeft: "2px" }}>
-                Developed a full-stack web application using Flask, React,
-                PostgreSQL and Docker to analyze GitHub data
-              </li>
-              <li style={{ marginBottom: "1.5px", paddingLeft: "2px" }}>
-                Explored ways to visualize GitHub collaboration in a classroom
-                setting
-              </li>
-            </ul>
-          </div>
-
-          {/* Job 2 */}
-          <div
-            style={{
-              marginTop: "5px",
-              marginBottom: "7px",
-              paddingLeft: "12px",
-              paddingRight: "12px",
-            }}
-          >
-            <div
-              className="flex justify-between"
-              style={{ marginBottom: "1px" }}
-            >
-              <div style={{ fontWeight: "bold", fontSize: "10.5pt" }}>
-                Information Technology Support Specialist
+              <div
+                className="flex justify-between"
+                style={{ marginBottom: "1px" }}
+              >
+                <div style={{ fontWeight: "bold", fontSize: "10.5pt" }}>
+                  {exp.position || "Software Engineer Intern"}
+                </div>
+                <div style={{ fontSize: "10.5pt" }}>
+                  {exp.startDate || "June 2020"} – {exp.endDate || "Present"}
+                </div>
               </div>
-              <div style={{ fontSize: "10.5pt" }}>Sep. 2018 – Present</div>
-            </div>
-            <div
-              className="flex justify-between"
-              style={{
-                fontSize: "9.5pt",
-                fontStyle: "italic",
-                marginBottom: "3px",
-              }}
-            >
-              <div>Southwestern University</div>
-              <div>Georgetown, TX</div>
-            </div>
-            <ul
-              style={{
-                listStyleType: "disc",
-                marginLeft: "15px",
-                paddingLeft: "12px",
-                paddingRight: "12px",
-                fontSize: "9.5pt",
-                lineHeight: "1.25",
-              }}
-            >
-              <li style={{ marginBottom: "1.5px", paddingLeft: "2px" }}>
-                Communicate with managers to set up campus computers used on
-                campus
-              </li>
-              <li style={{ marginBottom: "1.5px", paddingLeft: "2px" }}>
-                Assess and troubleshoot computer problems brought by students,
-                faculty and staff
-              </li>
-              <li style={{ marginBottom: "1.5px", paddingLeft: "2px" }}>
-                Maintain upkeep of computers, classroom equipment, and 200
-                printers across campus
-              </li>
-            </ul>
-          </div>
-
-          {/* Job 3 */}
-          <div
-            style={{
-              marginTop: "5px",
-              marginBottom: "7px",
-              paddingLeft: "12px",
-              paddingRight: "12px",
-            }}
-          >
-            <div
-              className="flex justify-between"
-              style={{ marginBottom: "1px" }}
-            >
-              <div style={{ fontWeight: "bold", fontSize: "10.5pt" }}>
-                Artificial Intelligence Research Assistant
+              <div
+                className="flex justify-between"
+                style={{
+                  fontSize: "9.5pt",
+                  fontStyle: "italic",
+                  marginBottom: "3px",
+                }}
+              >
+                <div>{exp.company || "Texas A&M University"}</div>
+                <div>{exp.location || "College Station, TX"}</div>
               </div>
-              <div style={{ fontSize: "10.5pt" }}>May 2019 – July 2019</div>
+              <ul
+                style={{
+                  listStyleType: "disc",
+                  marginLeft: "15px",
+                  fontSize: "9.5pt",
+                  lineHeight: "1.25",
+                  paddingLeft: "12px",
+                  paddingRight: "12px",
+                }}
+              >
+                {exp.bullets?.filter((bullet) => bullet.trim()).length > 0 ? (
+                  exp.bullets
+                    ?.filter((bullet) => bullet.trim())
+                    .map((bullet, bulletIndex) => (
+                      <li
+                        key={bulletIndex}
+                        style={{ marginBottom: "1.5px", paddingLeft: "2px" }}
+                      >
+                        {bullet.trim()}
+                      </li>
+                    ))
+                ) : (
+                  <>
+                    <li style={{ marginBottom: "1.5px", paddingLeft: "2px" }}>
+                      Developed a REST API using FastAPI and PostgreSQL to store
+                      data from learning management systems
+                    </li>
+                    <li style={{ marginBottom: "1.5px", paddingLeft: "2px" }}>
+                      Developed a full-stack web application using Flask, React,
+                      PostgreSQL and Docker to analyze GitHub data
+                    </li>
+                    <li style={{ marginBottom: "1.5px", paddingLeft: "2px" }}>
+                      Explored ways to visualize GitHub collaboration in a
+                      classroom setting
+                    </li>
+                  </>
+                )}
+              </ul>
             </div>
-            <div
-              className="flex justify-between"
-              style={{
-                fontSize: "9.5pt",
-                fontStyle: "italic",
-                marginBottom: "3px",
-              }}
-            >
-              <div>Southwestern University</div>
-              <div>Georgetown, TX</div>
-            </div>
-            <ul
-              style={{
-                listStyleType: "disc",
-                marginLeft: "15px",
-                paddingLeft: "12px",
-                paddingRight: "12px",
-                fontSize: "9.5pt",
-                lineHeight: "1.25",
-              }}
-            >
-              <li style={{ marginBottom: "1.5px", paddingLeft: "2px" }}>
-                Explored methods to generate video game dungeons based off of{" "}
-                <em>The Legend of Zelda</em>
-              </li>
-              <li style={{ marginBottom: "1.5px", paddingLeft: "2px" }}>
-                Developed a game in Java to test the generated dungeons
-              </li>
-              <li style={{ marginBottom: "1.5px", paddingLeft: "2px" }}>
-                Contributed 50K+ lines of code to an established codebase via
-                Git
-              </li>
-              <li style={{ marginBottom: "1.5px", paddingLeft: "2px" }}>
-                Conducted a human subject study to determine which video game
-                dungeon generation technique is enjoyable
-              </li>
-              <li style={{ marginBottom: "1.5px", paddingLeft: "2px" }}>
-                Wrote an 8-page paper and gave multiple presentations on-campus
-              </li>
-              <li style={{ marginBottom: "1.5px", paddingLeft: "2px" }}>
-                Presented virtually to the World Conference on Computational
-                Intelligence
-              </li>
-            </ul>
-          </div>
+          ))}
         </div>
 
         {/* PROJECTS SECTION */}
@@ -313,107 +216,78 @@ export default function JakeRyanResume({ data }: JakeRyanResumeProps) {
               borderBottom: "0.75px solid #000",
             }}
           >
-            Projects
+            {data.sectionNames?.projects || "Projects"}
           </h2>
 
-          {/* Project 1 */}
-          <div
-            style={{
-              marginTop: "5px",
-              marginBottom: "7px",
-              paddingLeft: "12px",
-              paddingRight: "12px",
-            }}
-          >
+          {data.projects?.map((project) => (
             <div
-              className="flex justify-between"
-              style={{ marginBottom: "3px" }}
-            >
-              <div style={{ fontSize: "9.5pt" }}>
-                <span style={{ fontWeight: "bold" }}>Gitlytics</span>
-                <span style={{ fontStyle: "italic" }}>
-                  {" "}
-                  | Python, Flask, React, PostgreSQL, Docker
-                </span>
-              </div>
-              <div style={{ fontSize: "9.5pt" }}>June 2020 – Present</div>
-            </div>
-            <ul
+              key={project.id}
               style={{
-                listStyleType: "disc",
-                marginLeft: "15px",
-                fontSize: "9.5pt",
-                lineHeight: "1.25",
+                marginTop: "5px",
+                marginBottom: "7px",
                 paddingLeft: "12px",
                 paddingRight: "12px",
               }}
             >
-              <li style={{ marginBottom: "1.5px", paddingLeft: "2px" }}>
-                Developed a full-stack web application using with Flask serving
-                a REST API with React as the frontend
-              </li>
-              <li style={{ marginBottom: "1.5px", paddingLeft: "2px" }}>
-                Implemented GitHub OAuth to get data from user's repositories
-              </li>
-              <li style={{ marginBottom: "1.5px", paddingLeft: "2px" }}>
-                Visualized GitHub data to show collaboration
-              </li>
-              <li style={{ marginBottom: "1.5px", paddingLeft: "2px" }}>
-                Used Celery and Redis for asynchronous tasks
-              </li>
-            </ul>
-          </div>
+              <div
+                className="flex justify-between"
+                style={{ marginBottom: "3px" }}
+              >
+                <div style={{ fontSize: "9.5pt" }}>
+                  <span style={{ fontWeight: "bold" }}>{project.name}</span>
 
-          {/* Project 2 */}
-          <div
-            style={{
-              marginTop: "5px",
-              marginBottom: "7px",
-              paddingLeft: "12px",
-              paddingRight: "12px",
-            }}
-          >
-            <div
-              className="flex justify-between"
-              style={{ marginBottom: "3px" }}
-            >
-              <div style={{ fontSize: "9.5pt" }}>
-                <span style={{ fontWeight: "bold" }}>Simple Paintball</span>
-                <span style={{ fontStyle: "italic" }}>
-                  {" "}
-                  | Spigot API, Java, Maven, TravisCI, Git
-                </span>
+                  {project.projectLink && (
+                    <span>
+                      {" "}
+                      (
+                      <a
+                        href={
+                          project.projectLink.startsWith("http")
+                            ? project.projectLink
+                            : `https://${project.projectLink}`
+                        }
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{ textDecoration: "underline" }}
+                      >
+                        link
+                      </a>
+                      )
+                    </span>
+                  )}
+
+                  <span style={{ fontStyle: "italic" }}>
+                    {project.technologies ? ` | ${project.technologies}` : ""}
+                  </span>
+                </div>
+
+                <div style={{ fontSize: "9.5pt" }}>
+                  {project.startDate || ""}
+                  {project.endDate ? ` – ${project.endDate}` : ""}
+                </div>
               </div>
-              <div style={{ fontSize: "9.5pt" }}>May 2018 – May 2020</div>
+
+              <ul
+                style={{
+                  listStyleType: "disc",
+                  marginLeft: "15px",
+                  fontSize: "9.5pt",
+                  lineHeight: "1.25",
+                  paddingLeft: "12px",
+                  paddingRight: "12px",
+                }}
+              >
+                {project.bullets.map((bullet, bulletIndex) => (
+                  <li
+                    key={bulletIndex}
+                    style={{ marginBottom: "1.5px", paddingLeft: "2px" }}
+                  >
+                    {bullet}
+                  </li>
+                ))}
+              </ul>
             </div>
-            <ul
-              style={{
-                listStyleType: "disc",
-                marginLeft: "15px",
-                paddingLeft: "12px",
-                paddingRight: "12px",
-                fontSize: "9.5pt",
-                lineHeight: "1.25",
-              }}
-            >
-              <li style={{ marginBottom: "1.5px", paddingLeft: "2px" }}>
-                Developed a Minecraft server plugin to entertain kids during
-                free time for a previous job
-              </li>
-              <li style={{ marginBottom: "1.5px", paddingLeft: "2px" }}>
-                Published plugin to websites gaining 2K+ downloads and an
-                average 4.5/5-star review
-              </li>
-              <li style={{ marginBottom: "1.5px", paddingLeft: "2px" }}>
-                Implemented continuous delivery using TravisCI to build the
-                plugin upon new a release
-              </li>
-              <li style={{ marginBottom: "1.5px", paddingLeft: "2px" }}>
-                Collaborated with Minecraft server administrators to suggest
-                features and get feedback about the plugin
-              </li>
-            </ul>
-          </div>
+          ))}
         </div>
 
         {/* TECHNICAL SKILLS SECTION */}
@@ -429,7 +303,7 @@ export default function JakeRyanResume({ data }: JakeRyanResumeProps) {
               borderBottom: "0.75px solid #000",
             }}
           >
-            Technical Skills
+            {data.sectionNames?.skills || "Technical Skills"}
           </h2>
 
           <div
@@ -443,21 +317,23 @@ export default function JakeRyanResume({ data }: JakeRyanResumeProps) {
             }}
           >
             <div style={{ marginBottom: "2px" }}>
-              <span style={{ fontWeight: "bold" }}>Languages</span>: Java,
-              Python, C/C++, SQL (Postgres), JavaScript, HTML/CSS, R
+              <span style={{ fontWeight: "bold" }}>Languages</span>:{" "}
+              {data.skills?.languages ||
+                "Java, Python, JavaScript, TypeScript, SQL, HTML, CSS"}
             </div>
             <div style={{ marginBottom: "2px" }}>
-              <span style={{ fontWeight: "bold" }}>Frameworks</span>: React,
-              Node.js, Flask, JUnit, WordPress, Material-UI, FastAPI
+              <span style={{ fontWeight: "bold" }}>Frameworks</span>:{" "}
+              {data.skills?.frameworks ||
+                "React, Node.js, Flask, JUnit, WordPress, Material-UI, FastAPI"}
             </div>
             <div style={{ marginBottom: "2px" }}>
-              <span style={{ fontWeight: "bold" }}>Developer Tools</span>: Git,
-              Docker, TravisCI, Google Cloud Platform, VS Code, Visual Studio,
-              PyCharm, IntelliJ, Eclipse
+              <span style={{ fontWeight: "bold" }}>Developer Tools</span>:{" "}
+              {data.skills?.developerTools ||
+                "Git, Docker, TravisCI, Google Cloud Platform, VS Code, Visual Studio, PyCharm, IntelliJ, Eclipse"}
             </div>
             <div>
-              <span style={{ fontWeight: "bold" }}>Libraries</span>: pandas,
-              NumPy, Matplotlib
+              <span style={{ fontWeight: "bold" }}>Libraries</span>:{" "}
+              {data.skills?.libraries || "pandas, NumPy, Matplotlib"}
             </div>
           </div>
         </div>
