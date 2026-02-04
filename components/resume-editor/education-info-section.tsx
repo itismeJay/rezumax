@@ -167,10 +167,19 @@ export function EducationInfoSection({
     month: string,
     year: string,
   ) => {
-    if (month && year) {
-      const formattedDate = `${month} ${year}`;
-      handleFieldChange(id, field, formattedDate);
-    }
+    // Get the current stored value from your entries/state
+    const entry = entries.find((e) => e.id === id);
+    const currentValue = entry ? entry[field] : "";
+
+    // Parse the existing month/year
+    const current = parseDateParts(currentValue);
+
+    // Use the new value if provided, otherwise keep the current value
+    const formattedDate =
+      `${month || current.month} ${year || current.year}`.trim();
+
+    // Update the field with the combined value
+    handleFieldChange(id, field, formattedDate);
   };
 
   // 👇 CHANGED: Handle rename section
