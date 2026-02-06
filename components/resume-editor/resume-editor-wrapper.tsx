@@ -91,7 +91,7 @@ export default function ResumeEditorWrapper({
         setSaveStatus(null);
       }
     },
-    2000, // Reduced from 3000 to 2000ms for faster saves
+    1000, // Reduced from 3000 to 2000ms for faster saves
   );
 
   // --------------------------------------------
