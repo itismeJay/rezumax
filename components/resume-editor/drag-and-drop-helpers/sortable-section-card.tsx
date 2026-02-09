@@ -154,7 +154,7 @@ export function SortableSectionCard({
             )}
           </div>
         </CardHeader>
-        <CardContent>{visible && children}</CardContent>
+        <CardContent>{children}</CardContent>
       </Card>
     </div>
   );
