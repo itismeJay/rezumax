@@ -1,6 +1,40 @@
-// types/resume.ts (or wherever you have ResumeData)
+// types/resume.ts
 import { z } from "zod";
 
+// -------------------------------
+// Section Types
+// -------------------------------
+export type SectionType =
+  | "education"
+  | "experience"
+  | "projects"
+  | "skills"
+  | "summary"
+  | "certifications"
+  | "awards"
+  | "leadership"
+  | "research"
+  | "publications"
+  | "volunteer"
+  | "languages"
+  | "interests"
+  | "custom";
+
+// -------------------------------
+// Generic Resume Section
+// -------------------------------
+export interface ResumeSection {
+  id: string; // Unique identifier
+  type: SectionType; // Section type
+  title: string; // Display title (can be customized)
+  order: number; // For sorting/reordering
+  visible: boolean; // Show/hide
+  data: any; // Actual content (array/object depending on section)
+}
+
+// -------------------------------
+// Resume Data (Dynamic Sections)
+// -------------------------------
 export interface ResumeData {
   personalInfo: {
     fullName: string;
@@ -10,50 +44,12 @@ export interface ResumeData {
     github?: string;
     portfolio?: string;
   };
-  education: Array<{
-    id: string;
-    school: string;
-    degree: string;
-    location: string;
-    startDate: string;
-    graduateDate: string;
-    gpa?: string;
-  }>;
-  experience: Array<{
-    id: string;
-    position: string;
-    company: string;
-    location: string;
-    startDate: string;
-    endDate: string;
-    bullets: string[];
-  }>;
-  projects: Array<{
-    id: string;
-    name: string;
-    technologies: string;
-    startDate?: string;
-    endDate?: string;
-    projectLink?: string;
-    bullets: string[];
-  }>;
-  skills: {
-    languages: string;
-    frameworks: string;
-    developerTools: string;
-    libraries: string;
-  };
-
-  // 👇 ADD THIS - Section names for all customizable sections
-  sectionNames?: {
-    education?: string;
-    experience?: string;
-    projects?: string;
-    skills?: string;
-  };
+  sections: ResumeSection[]; // ✅ Dynamic sections array
 }
 
-// Zod schema for ResumeData
+// -------------------------------
+// Zod schema for validation
+// -------------------------------
 export const resumeDataSchema = z.object({
   personalInfo: z.object({
     fullName: z.string(),
@@ -63,70 +59,50 @@ export const resumeDataSchema = z.object({
     github: z.string().optional(),
     portfolio: z.string().optional(),
   }),
-  education: z.array(
+  sections: z.array(
     z.object({
       id: z.string(),
-      school: z.string(),
-      degree: z.string(),
-      location: z.string(),
-      startDate: z.string(),
-      graduateDate: z.string(), // 👈 Fixed: was "endDate" in your schema
-      gpa: z.string().optional(),
+      type: z.enum([
+        "education",
+        "experience",
+        "projects",
+        "skills",
+        "summary",
+        "certifications",
+        "awards",
+        "leadership",
+        "research",
+        "publications",
+        "volunteer",
+        "languages",
+        "interests",
+        "custom",
+      ]),
+      title: z.string(),
+      order: z.number(),
+      visible: z.boolean(),
+      data: z.any(),
     }),
   ),
-  experience: z.array(
-    z.object({
-      id: z.string(),
-      position: z.string(),
-      company: z.string(),
-      location: z.string(),
-      startDate: z.string(),
-      endDate: z.string(),
-      bullets: z.array(z.string()),
-    }),
-  ),
-  projects: z.array(
-    z.object({
-      id: z.string(),
-      name: z.string(),
-      technologies: z.string(),
-      startDate: z.string().optional(),
-      endDate: z.string().optional(),
-      projectLink: z.string().optional(), // 👈 Added this
-      bullets: z.array(z.string()),
-    }),
-  ),
-  skills: z.object({
-    languages: z.string(),
-    frameworks: z.string(),
-    developerTools: z.string(),
-    libraries: z.string(),
-  }),
-
-  // 👇 ADD THIS - Zod schema for section names
-  sectionNames: z
-    .object({
-      education: z.string().optional(),
-      experience: z.string().optional(),
-      projects: z.string().optional(),
-      skills: z.string().optional(),
-    })
-    .optional(),
 });
 
-// Type for the full database row
+// -------------------------------
+// Full DB row type
+// -------------------------------
 export interface ResumeFromDB {
   id: string;
   userId: string;
   title: string;
   template: string;
-  content: ResumeData; // The JSON content matches ResumeData
+  content: ResumeData; // JSON content
   score: number | null;
   createdAt: Date;
   updatedAt: Date;
 }
 
-// Zod schema for ResumeFromDB
+// -------------------------------
+// Zod schema for DB row
+// -------------------------------
 export const resumeFromDBSchema = z.object({
   id: z.string(),
   userId: z.string(),
