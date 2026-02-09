@@ -249,7 +249,7 @@ export function SkillsInfoSection({
             </div>
 
             {/* Optional Fields */}
-            {showOptionalFields && (
+            {/* {showOptionalFields && (
               <div className="space-y-4 p-4 rounded-lg border border-border bg-muted/10">
                 <div className="flex items-center gap-2 mb-2">
                   <div className="h-1 w-1 rounded-full bg-primary/60"></div>
@@ -258,7 +258,6 @@ export function SkillsInfoSection({
                   </span>
                 </div>
 
-                {/* Databases */}
                 <div className="space-y-2">
                   <Label className="text-xs text-muted-foreground font-medium">
                     Databases
@@ -273,7 +272,6 @@ export function SkillsInfoSection({
                   />
                 </div>
 
-                {/* Cloud Platforms */}
                 <div className="space-y-2">
                   <Label className="text-xs text-muted-foreground font-medium">
                     Cloud Platforms & Services
@@ -288,7 +286,6 @@ export function SkillsInfoSection({
                   />
                 </div>
 
-                {/* Other */}
                 <div className="space-y-2">
                   <Label className="text-xs text-muted-foreground font-medium">
                     Other Skills
@@ -301,10 +298,10 @@ export function SkillsInfoSection({
                   />
                 </div>
               </div>
-            )}
+            )} */}
 
             {/* Toggle Optional Fields Button */}
-            <Button
+            {/* <Button
               type="button"
               variant="outline"
               size="sm"
@@ -315,7 +312,7 @@ export function SkillsInfoSection({
               {showOptionalFields
                 ? "Hide Optional Categories"
                 : "Add More Categories"}
-            </Button>
+            </Button> */}
 
             {/* Helper Tips */}
             <div className="space-y-2 mt-4">
