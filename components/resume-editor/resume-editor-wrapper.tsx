@@ -97,7 +97,7 @@ export default function ResumeEditorWrapper({
     }),
   );
 
-  // ✅ STEP 6.3: Auto-save function (unchanged)
+  // ✅ STEP 6.3: Auto-save function
   const debouncedAutoSave = useDebouncedCallback(
     async (content: ResumeData) => {
       try {
@@ -221,9 +221,18 @@ export default function ResumeEditorWrapper({
     }
   };
 
-  // ✅ STEP 6.11: Render correct form component based on section type
+  // ✅ STEP 6.11: Render correct form component based on section type with chrome callbacks
   const renderSectionForm = (section: ResumeSection) => {
     const onChange = (data: any) => handleSectionDataChange(section.id, data);
+
+    // Common chrome props that will be passed to sections that support them
+    const chromeProps = {
+      visible: section.visible,
+      onToggleVisibility: () => handleToggleVisibility(section.id),
+      onRename: (newTitle: string) => handleRenameSection(section.id, newTitle),
+      onDelete: () => handleDeleteSection(section.id),
+      canDelete: resumeContent.sections.length > 1,
+    };
 
     switch (section.type) {
       case "education":
@@ -231,6 +240,7 @@ export default function ResumeEditorWrapper({
           <EducationInfoSection
             educationInfo={section.data}
             onChange={onChange}
+            {...chromeProps}
           />
         );
       case "experience":
@@ -238,6 +248,7 @@ export default function ResumeEditorWrapper({
           <ExperienceInfoSection
             experienceInfo={section.data}
             onChange={onChange}
+            {...chromeProps}
           />
         );
       case "projects":
@@ -245,32 +256,47 @@ export default function ResumeEditorWrapper({
           <ProjectsInfoSection
             projectsInfo={section.data}
             onChange={onChange}
+            {...chromeProps}
           />
         );
       case "skills":
         return (
-          <SkillsInfoSection skillsInfo={section.data} onChange={onChange} />
+          <SkillsInfoSection
+            skillsInfo={section.data}
+            onChange={onChange}
+            {...chromeProps}
+          />
         );
       case "certifications":
         return (
           <CertificationsSection
             certificationsInfo={section.data}
             onChange={onChange}
+            {...chromeProps}
           />
         );
       case "summary":
         return (
-          <SummaryInfoSection summaryInfo={section.data} onChange={onChange} />
+          <SummaryInfoSection
+            summaryInfo={section.data}
+            onChange={onChange}
+            {...chromeProps}
+          />
         );
       case "awards":
         return (
-          <AwardsInfoSection awardsInfo={section.data} onChange={onChange} />
+          <AwardsInfoSection
+            awardsInfo={section.data}
+            onChange={onChange}
+            {...chromeProps}
+          />
         );
       case "languages":
         return (
           <LanguagesInfoSection
             languagesInfo={section.data}
             onChange={onChange}
+            {...chromeProps}
           />
         );
       case "leadership":
@@ -278,6 +304,7 @@ export default function ResumeEditorWrapper({
           <LeadershipInfoSection
             leadershipInfo={section.data}
             onChange={onChange}
+            {...chromeProps}
           />
         );
       case "research":
@@ -285,6 +312,7 @@ export default function ResumeEditorWrapper({
           <ResearchInfoSection
             researchInfo={section.data}
             onChange={onChange}
+            {...chromeProps}
           />
         );
       case "publications":
@@ -292,6 +320,7 @@ export default function ResumeEditorWrapper({
           <PublicationsInfoSection
             publicationsInfo={section.data}
             onChange={onChange}
+            {...chromeProps}
           />
         );
       case "volunteer":
@@ -299,6 +328,7 @@ export default function ResumeEditorWrapper({
           <VolunteerInfoSection
             volunteerInfo={section.data}
             onChange={onChange}
+            {...chromeProps}
           />
         );
       case "interests":
@@ -306,11 +336,16 @@ export default function ResumeEditorWrapper({
           <InterestsInfoSection
             interestsInfo={section.data}
             onChange={onChange}
+            {...chromeProps}
           />
         );
       case "custom":
         return (
-          <CustomInfoSection customInfo={section.data} onChange={onChange} />
+          <CustomInfoSection
+            customInfo={section.data}
+            onChange={onChange}
+            {...chromeProps}
+          />
         );
       default:
         return (
@@ -324,8 +359,11 @@ export default function ResumeEditorWrapper({
   // Get list of existing section types (for Add Section menu)
   const existingSectionTypes = resumeContent.sections.map((s) => s.type);
 
-  // Manual save handler (for Save button)
+  // ✅ FIX 1: Manual save handler with debounce cancellation
   const handleSaveClick = async () => {
+    // Cancel any pending auto-save to prevent race conditions
+    debouncedAutoSave.cancel();
+
     setIsSaving(true);
     setSaveStatus("saving");
     try {
@@ -341,6 +379,7 @@ export default function ResumeEditorWrapper({
     } catch (error) {
       console.error("Save failed:", error);
       toast.error("Failed to save changes");
+      setSaveStatus(null);
     } finally {
       setIsSaving(false);
     }
@@ -452,7 +491,8 @@ export default function ResumeEditorWrapper({
                   items={resumeContent.sections.map((s) => s.id)}
                   strategy={verticalListSortingStrategy}
                 >
-                  {resumeContent.sections
+                  {/* ✅ FIX 2: Non-mutating sort using spread operator */}
+                  {[...resumeContent.sections]
                     .sort((a, b) => a.order - b.order)
                     .map((section) => (
                       <SortableSectionCard
