@@ -1,4 +1,3 @@
-// components/resume-editor/add-section-menu.tsx
 "use client";
 
 import { useState } from "react";
@@ -12,8 +11,9 @@ import {
   Users,
   Globe,
   Heart,
-  X,
+  Sparkles,
 } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -31,7 +31,10 @@ interface AddSectionMenuProps {
   onAddSection: (type: SectionType) => void;
 }
 
-// Map icons for the sections
+/**
+ * Icon map for all section types
+ * Every icon used in sectionOptions MUST exist here
+ */
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   GraduationCap,
   Briefcase,
@@ -41,6 +44,8 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   Users,
   Globe,
   Heart,
+  Sparkles,
+  Plus,
 };
 
 export function AddSectionMenu({
@@ -63,52 +68,90 @@ export function AddSectionMenu({
         "Brief overview of your professional background and key strengths",
     },
     {
+      type: "education",
+      label: "Education",
+      icon: "GraduationCap",
+      description:
+        "Your academic background, degrees, institutions, and achievements",
+    },
+    {
+      type: "experience",
+      label: "Work Experience",
+      icon: "Briefcase",
+      description:
+        "Your professional work history, roles, and responsibilities",
+    },
+    {
+      type: "projects",
+      label: "Projects",
+      icon: "FolderGit2",
+      description:
+        "Personal, academic, or professional projects you've worked on",
+    },
+    {
+      type: "skills",
+      label: "Skills",
+      icon: "Sparkles",
+      description:
+        "Technical, professional, or soft skills relevant to your career",
+    },
+    {
       type: "certifications",
       label: "Certifications",
       icon: "Award",
-      description: "Professional certifications and licenses you've earned",
+      description:
+        "Professional certifications, licenses, and credentials you've earned",
     },
     {
       type: "leadership",
       label: "Leadership Experience",
       icon: "Users",
-      description: "Leadership roles and team management experience",
+      description:
+        "Leadership roles, mentorship, and team management experience",
     },
     {
       type: "publications",
       label: "Publications",
       icon: "BookOpen",
-      description: "Published articles, papers, or books",
+      description: "Published articles, research papers, books, or journals",
     },
     {
       type: "research",
       label: "Research",
       icon: "FolderGit2",
-      description: "Research projects and academic work",
+      description:
+        "Research projects, academic studies, and investigative work",
     },
     {
       type: "volunteer",
       label: "Volunteer Work",
       icon: "Heart",
-      description: "Community service and volunteer activities",
+      description: "Community service, volunteering, and nonprofit involvement",
     },
     {
       type: "languages",
       label: "Languages",
       icon: "Globe",
-      description: "Languages you speak and proficiency levels",
+      description: "Languages you speak and your proficiency levels",
     },
     {
       type: "awards",
       label: "Awards & Honors",
       icon: "Award",
-      description: "Recognition and achievements you've received",
+      description: "Honors, recognitions, and achievements you've received",
     },
     {
       type: "interests",
       label: "Interests",
       icon: "Heart",
-      description: "Personal interests and hobbies",
+      description:
+        "Personal interests, hobbies, and activities outside of work",
+    },
+    {
+      type: "custom",
+      label: "Custom Section",
+      icon: "Plus",
+      description: "Create a custom section tailored to your unique background",
     },
   ];
 
@@ -133,8 +176,8 @@ export function AddSectionMenu({
               "text-muted-foreground hover:text-foreground",
             )}
           >
-            <div className="flex items-center justify-center w-8 h-8 rounded-full bg-muted transition-all duration-300 ease-in-out group-hover:bg-primary/10">
-              <Plus className="w-4 h-4 transition-transform duration-300 ease-in-out group-hover:rotate-90" />
+            <div className="flex items-center justify-center w-8 h-8 rounded-full bg-muted transition-all duration-300 ease-in-out">
+              <Plus className="w-4 h-4 transition-transform duration-300 ease-in-out" />
             </div>
             <span className="font-medium">Add New Section</span>
           </Button>
@@ -142,23 +185,19 @@ export function AddSectionMenu({
 
         <DialogContent className="sm:max-w-[700px] max-h-[85vh] p-0 overflow-hidden">
           <DialogHeader className="px-6 pt-6 pb-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <DialogTitle className="text-2xl font-semibold">
-                  Add New Section
-                </DialogTitle>
-                <DialogDescription className="mt-1.5">
-                  Choose a section to add to your resume
-                </DialogDescription>
-              </div>
-            </div>
+            <DialogTitle className="text-2xl font-semibold">
+              Add New Section
+            </DialogTitle>
+            <DialogDescription className="mt-1.5">
+              Choose a section to add to your resume
+            </DialogDescription>
           </DialogHeader>
 
           <div className="px-6 pb-6">
-            <div className="max-h-[calc(85vh-160px)] overflow-y-auto pr-2 -mr-2 scrollbar-thin scrollbar-thumb-muted scrollbar-track-transparent">
+            <div className="max-h-[calc(85vh-160px)] overflow-y-auto pr-2 -mr-2">
               {availableSections.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-12 text-center">
-                  <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-4 transition-transform duration-500 ease-out hover:scale-110">
+                  <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-4">
                     <Award className="w-8 h-8 text-muted-foreground" />
                   </div>
                   <p className="text-sm text-muted-foreground font-medium">
@@ -172,29 +211,30 @@ export function AddSectionMenu({
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   {availableSections.map((section, index) => {
                     const Icon = iconMap[section.icon];
+
                     return (
                       <button
                         key={section.type}
                         onClick={() => handleAddSection(section.type)}
-                        className="w-full flex items-start gap-4 p-4 rounded-lg border border-border bg-card hover:bg-accent hover:border-primary/50 transition-all duration-300 ease-out cursor-pointer text-left group hover:shadow-lg transform hover:-translate-y-0.5"
+                        className="w-full flex items-start gap-4 p-4 rounded-lg border border-border bg-card hover:bg-accent hover:border-primary/50 transition-all duration-300 ease-out text-left group"
                         style={{
                           animation: `fadeInUp 0.4s ease-out ${index * 0.05}s both`,
                         }}
                       >
-                        <div className="flex items-center justify-center w-12 h-12 rounded-lg bg-muted group-hover:bg-primary/10 transition-all duration-300 ease-out shrink-0 group-hover:scale-110">
-                          {Icon && (
-                            <Icon className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors duration-300 ease-out" />
-                          )}
+                        <div className="flex items-center justify-center w-12 h-12 rounded-lg bg-muted group-hover:bg-primary/10 transition-all duration-300 shrink-0">
+                          <Icon className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors duration-300" />
                         </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="font-semibold text-sm text-foreground mb-1 group-hover:text-primary transition-colors duration-300 ease-out">
+
+                        <div className="flex-1">
+                          <div className="font-semibold text-sm mb-1">
                             {section.label}
                           </div>
-                          <div className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
+                          <div className="text-xs text-muted-foreground line-clamp-2">
                             {section.description}
                           </div>
                         </div>
-                        <Plus className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-all duration-300 ease-out shrink-0 mt-1 opacity-0 group-hover:opacity-100 transform group-hover:rotate-90" />
+
+                        <Plus className="w-4 h-4 text-muted-foreground group-hover:text-primary opacity-0 group-hover:opacity-100 transition-all duration-300 mt-1" />
                       </button>
                     );
                   })}

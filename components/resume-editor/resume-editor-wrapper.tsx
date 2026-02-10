@@ -227,10 +227,12 @@ export default function ResumeEditorWrapper({
 
     // Common chrome props that will be passed to sections that support them
     const chromeProps = {
+      sectionName: section.title,
       visible: section.visible,
-      onToggleVisibility: () => handleToggleVisibility(section.id),
-      onRename: (newTitle: string) => handleRenameSection(section.id, newTitle),
-      onDelete: () => handleDeleteSection(section.id),
+      onVisibilityChange: () => handleToggleVisibility(section.id),
+      onSectionNameChange: (newTitle: string) =>
+        handleRenameSection(section.id, newTitle),
+      onDeleteSection: () => handleDeleteSection(section.id),
       canDelete: resumeContent.sections.length > 1,
     };
 

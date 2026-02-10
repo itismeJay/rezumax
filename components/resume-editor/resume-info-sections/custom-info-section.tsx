@@ -72,7 +72,7 @@ export function CustomInfoSection({
 
   const handleAddEntry = () => {
     const newEntry: CustomEntry = {
-      id: `custom-${Date.now()}`,
+      id: crypto.randomUUID(), // ✅ Perfect!
       title: "",
       subtitle: "",
       location: "",

@@ -1,17 +1,46 @@
 // app/dashboard/page.tsx
+
 import { Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-import { resumes, stats } from "@/constants/dashboard/stats";
 import { ResumeCard } from "@/components/dashboard/resume-card";
 import { StatsCard } from "@/components/dashboard/stats-card";
-import { getCurrentUser, getCurrentUserWithData } from "@/server/users";
+import { getCurrentUserWithData, getUserRecentResumes } from "@/server/users"; // ✅ NEW: Import stats function
+import { getUserDashboardStats } from "@/server/user-dashboard-stats";
+import { formatDashboardStats } from "@/lib/format-stats"; // ✅ NEW: Import formatter
 import MotionWrapper from "@/components/dashboard/wrapper/motion-wrapper";
-import { CreateResumeButton } from "@/components/dashboard/create-resume-button"; // ← Import
+import { CreateResumeButton } from "@/components/dashboard/create-resume-button";
 
+/**
+ * Dashboard page - Shows user overview and recent activity
+ *
+ * Features:
+ * - Real-time statistics
+ * - Recent resumes
+ * - Quick actions
+ */
 export default async function DashboardPage() {
+  // ==========================================
+  // 1. Get authenticated user
+  // ==========================================
   const user = await getCurrentUserWithData();
 
+  // ==========================================
+  // 2. Fetch data in parallel (performance!)
+  // ==========================================
+  const [recentResumes, statsData] = await Promise.all([
+    getUserRecentResumes(user.id, 4),
+    getUserDashboardStats(user.id),
+  ]);
+
+  // ==========================================
+  // 3. Format stats for display
+  // ==========================================
+  const stats = formatDashboardStats(statsData);
+
+  // ==========================================
+  // 4. Render UI
+  // ==========================================
   return (
     <div className="min-h-screen bg-background p-4 lg:p-8">
       <MotionWrapper>
@@ -27,11 +56,10 @@ export default async function DashboardPage() {
               </p>
             </div>
 
-            {/* ✅ CHANGED: Use CreateResumeButton instead of Link */}
             <CreateResumeButton />
           </div>
 
-          {/* Stats */}
+          {/* Stats - ✅ Now using real data from database! */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
             {stats.map((stat) => (
               <StatsCard key={stat.label} {...stat} />
@@ -41,11 +69,21 @@ export default async function DashboardPage() {
           {/* Recent Resumes */}
           <div className="mb-8">
             <h2 className="text-lg font-semibold mb-4">Recent Resumes</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {resumes.map((resume) => (
-                <ResumeCard key={resume.id} {...resume} />
-              ))}
-            </div>
+
+            {recentResumes.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {recentResumes.map((resume) => (
+                  <ResumeCard key={resume.id} {...resume} />
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-12 bg-card rounded-xl border border-border">
+                <p className="text-muted-foreground mb-4">
+                  No resumes yet. Create your first one to get started!
+                </p>
+                <CreateResumeButton />
+              </div>
+            )}
           </div>
 
           {/* Quick Actions */}
@@ -56,7 +94,6 @@ export default async function DashboardPage() {
             </p>
 
             <div className="flex flex-wrap gap-3">
-              {/* ✅ CHANGED: Use CreateResumeButton here too */}
               <div className="inline-block">
                 <CreateResumeButton variant="outline" size="sm" />
               </div>

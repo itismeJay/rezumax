@@ -1,3 +1,4 @@
+// components/dashboard/resume-card.tsx (keep "use client")
 "use client";
 
 import Link from "next/link";
@@ -123,7 +124,7 @@ export function ResumeCard({
           <Button
             variant="ghost"
             size="sm"
-            className="text-primary cursor-pointer"
+            className="text-primary hover:text-primary/80"
           >
             Edit Resume
           </Button>

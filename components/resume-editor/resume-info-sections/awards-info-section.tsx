@@ -68,7 +68,7 @@ export function AwardsInfoSection({
 
   const handleAddEntry = () => {
     const newEntry: AwardEntry = {
-      id: `award-${Date.now()}`,
+      id: crypto.randomUUID(), // ✅ Perfect!
       title: "",
       issuer: "",
       date: "",

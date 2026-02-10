@@ -87,7 +87,7 @@ export function ProjectsInfoSection({
   // Add new project entry
   const handleAddEntry = () => {
     const newEntry: ProjectEntry = {
-      id: `proj-${Date.now()}`,
+      id: crypto.randomUUID(), // ✅ Perfect!
       name: "",
       technologies: "",
       startDate: "",

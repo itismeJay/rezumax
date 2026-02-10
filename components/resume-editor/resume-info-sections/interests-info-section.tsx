@@ -64,7 +64,7 @@ export function InterestsInfoSection({
 
   const handleAddEntry = () => {
     const newEntry: InterestEntry = {
-      id: `interest-${Date.now()}`,
+      id: crypto.randomUUID(), // ✅ Perfect!
       interest: "",
     };
     const updated = [...entries, newEntry];
@@ -191,7 +191,7 @@ export function InterestsInfoSection({
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {entries.map((entry, index) => (
                 <div
-                  key={entry.id}
+                  key={`${entry.id}-${index}`} // ✅ Guaranteed unique
                   className="flex items-center gap-2 p-3 rounded-lg border border-border bg-muted/20 relative"
                 >
                   <div className="flex-1">

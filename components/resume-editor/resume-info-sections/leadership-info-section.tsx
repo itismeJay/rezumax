@@ -69,7 +69,7 @@ export function LeadershipInfoSection({
 
   const handleAddEntry = () => {
     const newEntry: LeadershipEntry = {
-      id: `lead-${Date.now()}`,
+      id: crypto.randomUUID(), // ✅ Perfect!
       role: "",
       organization: "",
       startDate: "",
