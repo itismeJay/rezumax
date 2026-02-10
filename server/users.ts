@@ -1,10 +1,11 @@
+// server/users.ts
 "use server";
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
-import { user } from "@/db/schema";
+import { user, resume } from "@/db/schema";
 import { db } from "@/db/drizzle";
-import { eq } from "drizzle-orm";
+import { eq, desc } from "drizzle-orm";
 
 export const getCurrentUser = async () => {
   const session = await auth.api.getSession({
@@ -18,7 +19,6 @@ export const getCurrentUser = async () => {
   return session.user;
 };
 
-// 🐢 Slower - Get user with database data
 export async function getCurrentUserWithData() {
   const session = await auth.api.getSession({
     headers: await headers(),
@@ -28,7 +28,6 @@ export async function getCurrentUserWithData() {
     redirect("/login");
   }
 
-  // Drizzle ORM query
   const currentUser = await db.query.user.findFirst({
     where: eq(user.id, session.user.id),
   });
@@ -40,17 +39,58 @@ export async function getCurrentUserWithData() {
   return currentUser;
 }
 
+// ✅ NEW: Get user's recent resumes
+export async function getUserRecentResumes(userId: string, limit: number = 4) {
+  try {
+    const resumes = await db
+      .select({
+        id: resume.id,
+        title: resume.title,
+        score: resume.score,
+        updatedAt: resume.updatedAt,
+        createdAt: resume.createdAt,
+      })
+      .from(resume)
+      .where(eq(resume.userId, userId))
+      .orderBy(desc(resume.createdAt)) // Order by creation date
+      .limit(limit);
+
+    // Format the data to match ResumeCard props
+    return resumes.map((r) => ({
+      id: r.id,
+      title: r.title,
+      score: r.score || 0,
+      lastUpdated: formatRelativeTime(r.updatedAt || r.createdAt),
+      targetJob: undefined, // Optional field
+    }));
+  } catch (error) {
+    console.error("Failed to fetch resumes:", error);
+    return [];
+  }
+}
+
+// Helper function for date formatting
+function formatRelativeTime(date: Date | string): string {
+  const now = new Date();
+  const then = new Date(date);
+  const diffInMs = now.getTime() - then.getTime();
+  const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+
+  if (diffInDays === 0) return "Today";
+  if (diffInDays === 1) return "Yesterday";
+  if (diffInDays < 7) return `${diffInDays} days ago`;
+  if (diffInDays < 30) return `${Math.floor(diffInDays / 7)} weeks ago`;
+  return `${Math.floor(diffInDays / 30)} months ago`;
+}
+
 export const signIn = async (email: string, password: string) => {
   try {
-    // Attempt to sign in
     await auth.api.signInEmail({
       body: {
         email,
         password,
       },
     });
-
-    // Success
     return { success: true, message: "Signed in successfully" };
   } catch (error: any) {
     if (error && typeof error === "object" && "code" in error) {
@@ -65,7 +105,6 @@ export const signIn = async (email: string, password: string) => {
       }
     }
 
-    // Optional: handle invalid credentials
     if (
       error.status === 401 ||
       error.message?.toLowerCase().includes("invalid")
@@ -73,7 +112,6 @@ export const signIn = async (email: string, password: string) => {
       return { success: false, message: "Email or password is incorrect." };
     }
 
-    // Fallback for other errors
     return { success: false, message: error.message || "Sign in failed" };
   }
 };

@@ -81,7 +81,7 @@ export function LanguagesInfoSection({
 
   const handleAddEntry = () => {
     const newEntry: LanguageEntry = {
-      id: `lang-${Date.now()}`,
+      id: crypto.randomUUID(), // ✅ Perfect!
       name: "",
       proficiency: "",
     };
@@ -210,9 +210,9 @@ export function LanguagesInfoSection({
               </p>
             </div>
           ) : (
-            entries.map((entry, index) => (
+            entries?.map((entry, index) => (
               <div
-                key={entry.id}
+                key={index}
                 className="flex items-start gap-3 p-3 rounded-lg border border-border bg-muted/20 relative"
               >
                 <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-3">

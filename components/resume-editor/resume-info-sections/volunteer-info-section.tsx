@@ -69,7 +69,7 @@ export function VolunteerInfoSection({
 
   const handleAddEntry = () => {
     const newEntry: VolunteerEntry = {
-      id: `volunteer-${Date.now()}`,
+      id: crypto.randomUUID(), // ✅ Perfect!
       role: "",
       organization: "",
       startDate: "",

@@ -91,7 +91,7 @@ export function EducationInfoSection({
   // Add a new education entry
   const handleAddEntry = () => {
     const newEntry: EducationEntry = {
-      id: `edu-${Date.now()}`,
+      id: crypto.randomUUID(), // ✅ Perfect!
       school: "",
       degree: "",
       location: "",

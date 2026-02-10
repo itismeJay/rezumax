@@ -70,7 +70,7 @@ export function ResearchInfoSection({
 
   const handleAddEntry = () => {
     const newEntry: ResearchEntry = {
-      id: `research-${Date.now()}`,
+      id: crypto.randomUUID(), // ✅ Perfect!
       title: "",
       institution: "",
       advisor: "",
@@ -238,7 +238,7 @@ export function ResearchInfoSection({
 
       {!collapsed && (
         <CardContent className="px-5 pb-5 space-y-6">
-          {entries.map((entry, index) => (
+          {entries?.map((entry, index) => (
             <div
               key={entry.id}
               className="space-y-4 p-4 rounded-lg border border-border bg-muted/20 relative"
@@ -331,7 +331,7 @@ export function ResearchInfoSection({
                 <Label className="text-xs text-muted-foreground font-medium">
                   Research Description
                 </Label>
-                {entry.description.map((desc, descIndex) => (
+                {entry.description?.map((desc, descIndex) => (
                   <div key={descIndex} className="flex gap-2 items-start">
                     <span className="text-muted-foreground mt-3 text-xs">
                       •

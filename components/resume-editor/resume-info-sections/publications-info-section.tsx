@@ -70,7 +70,7 @@ export function PublicationsInfoSection({
 
   const handleAddEntry = () => {
     const newEntry: PublicationEntry = {
-      id: `pub-${Date.now()}`,
+      id: crypto.randomUUID(), // ✅ Perfect!
       title: "",
       authors: "",
       venue: "",

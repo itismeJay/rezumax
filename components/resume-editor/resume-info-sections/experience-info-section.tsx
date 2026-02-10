@@ -103,7 +103,7 @@ export function ExperienceInfoSection({
   // Add new experience entry
   const handleAddEntry = () => {
     const newEntry: ExperienceEntry = {
-      id: `exp-${Date.now()}`,
+      id: crypto.randomUUID(), // ✅ Perfect!
       position: "",
       company: "",
       location: "",
