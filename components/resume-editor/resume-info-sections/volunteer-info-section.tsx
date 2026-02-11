@@ -54,7 +54,20 @@ export function VolunteerInfoSection({
   const [tempSectionName, setTempSectionName] = useState(sectionName);
 
   useEffect(() => {
-    setEntries(volunteerInfo);
+    // Normalize entries to ensure description is always an array
+    const normalizedEntries = (volunteerInfo || []).map((entry) => ({
+      id: entry.id || crypto.randomUUID(),
+      role: entry.role || "",
+      organization: entry.organization || "",
+      startDate: entry.startDate || "",
+      endDate: entry.endDate || "",
+      description: Array.isArray(entry.description)
+        ? entry.description
+        : entry.description
+          ? [entry.description]
+          : [""],
+    }));
+    setEntries(normalizedEntries);
   }, [volunteerInfo]);
 
   useEffect(() => {
@@ -69,7 +82,7 @@ export function VolunteerInfoSection({
 
   const handleAddEntry = () => {
     const newEntry: VolunteerEntry = {
-      id: crypto.randomUUID(), // ✅ Perfect!
+      id: crypto.randomUUID(),
       role: "",
       organization: "",
       startDate: "",
@@ -237,17 +250,14 @@ export function VolunteerInfoSection({
       {!collapsed && (
         <CardContent className="px-5 pb-5 space-y-6">
           {entries.map((entry, index) => {
-            // Ensure each entry has a unique key
-            const entryKey = entry.id || `entry-${index}`;
-
-            // Make sure description is always an array
+            // Ensure description is always an array
             const descriptions = Array.isArray(entry.description)
               ? entry.description
               : [entry.description || ""];
 
             return (
               <div
-                key={entryKey}
+                key={entry.id}
                 className="space-y-4 p-4 rounded-lg border border-border bg-muted/20 relative"
               >
                 {entries.length > 1 && (
@@ -328,42 +338,38 @@ export function VolunteerInfoSection({
                   <Label className="text-xs text-muted-foreground font-medium">
                     Key Contributions
                   </Label>
-                  {descriptions.map((desc, descIndex) => {
-                    // Unique key for each description: combines entryKey + descIndex
-                    const descKey = `desc-${descIndex}-${entryKey}`;
-                    return (
-                      <div key={descKey} className="flex gap-2 items-start">
-                        <span className="text-muted-foreground mt-3 text-xs">
-                          •
-                        </span>
-                        <Textarea
-                          placeholder="Tutored 15+ students in mathematics..."
-                          className="min-h-[60px] text-sm resize-none flex-1"
-                          value={desc}
-                          onChange={(e) =>
-                            handleDescriptionChange(
-                              entry.id,
-                              descIndex,
-                              e.target.value,
-                            )
+                  {descriptions.map((desc, descIndex) => (
+                    <div key={descIndex} className="flex gap-2 items-start">
+                      <span className="text-muted-foreground mt-3 text-xs">
+                        •
+                      </span>
+                      <Textarea
+                        placeholder="Tutored 15+ students in mathematics..."
+                        className="min-h-[60px] text-sm resize-none flex-1"
+                        value={desc}
+                        onChange={(e) =>
+                          handleDescriptionChange(
+                            entry.id,
+                            descIndex,
+                            e.target.value,
+                          )
+                        }
+                      />
+                      {descriptions.length > 1 && (
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                          onClick={() =>
+                            handleDeleteDescription(entry.id, descIndex)
                           }
-                        />
-                        {descriptions.length > 1 && (
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8 text-muted-foreground hover:text-destructive"
-                            onClick={() =>
-                              handleDeleteDescription(entry.id, descIndex)
-                            }
-                          >
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </Button>
-                        )}
-                      </div>
-                    );
-                  })}
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </Button>
+                      )}
+                    </div>
+                  ))}
 
                   <Button
                     type="button"

@@ -55,7 +55,17 @@ export function PublicationsInfoSection({
   const [tempSectionName, setTempSectionName] = useState(sectionName);
 
   useEffect(() => {
-    setEntries(publicationsInfo);
+    // Normalize entries to ensure all fields are strings (not undefined)
+    const normalizedEntries = (publicationsInfo || []).map((entry) => ({
+      id: entry.id || crypto.randomUUID(),
+      title: entry.title || "",
+      authors: entry.authors || "",
+      venue: entry.venue || "",
+      date: entry.date || "",
+      doi: entry.doi || "",
+      description: entry.description || "",
+    }));
+    setEntries(normalizedEntries);
   }, [publicationsInfo]);
 
   useEffect(() => {

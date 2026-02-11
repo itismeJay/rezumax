@@ -57,7 +57,21 @@ export function CustomInfoSection({
   const [tempSectionName, setTempSectionName] = useState(sectionName);
 
   useEffect(() => {
-    setEntries(customInfo);
+    // Normalize entries to ensure description is always an array and all have IDs
+    const normalizedEntries = (customInfo || []).map((entry) => ({
+      id: entry.id || crypto.randomUUID(),
+      title: entry.title || "",
+      subtitle: entry.subtitle || "",
+      location: entry.location || "",
+      startDate: entry.startDate || "",
+      endDate: entry.endDate || "",
+      description: Array.isArray(entry.description)
+        ? entry.description
+        : entry.description
+          ? [entry.description]
+          : [""],
+    }));
+    setEntries(normalizedEntries);
   }, [customInfo]);
 
   useEffect(() => {

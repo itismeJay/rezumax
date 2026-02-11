@@ -49,7 +49,12 @@ export function InterestsInfoSection({
   const [tempSectionName, setTempSectionName] = useState(sectionName);
 
   useEffect(() => {
-    setEntries(interestsInfo);
+    // Normalize entries to ensure all have unique IDs
+    const normalizedEntries = (interestsInfo || []).map((entry) => ({
+      id: entry.id || crypto.randomUUID(),
+      interest: entry.interest || "",
+    }));
+    setEntries(normalizedEntries);
   }, [interestsInfo]);
 
   useEffect(() => {

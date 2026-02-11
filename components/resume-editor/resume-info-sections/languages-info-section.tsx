@@ -66,7 +66,13 @@ export function LanguagesInfoSection({
   ];
 
   useEffect(() => {
-    setEntries(languagesInfo);
+    // Normalize entries to ensure all have unique IDs
+    const normalizedEntries = (languagesInfo || []).map((entry) => ({
+      id: entry.id || crypto.randomUUID(),
+      name: entry.name || "",
+      proficiency: entry.proficiency || "",
+    }));
+    setEntries(normalizedEntries);
   }, [languagesInfo]);
 
   useEffect(() => {

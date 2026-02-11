@@ -648,17 +648,42 @@ export function VolunteerSection({ title, data }: SectionProps) {
             >
               {vol.organization || ""}
             </div>
-            {vol.description && (
-              <div
-                style={{
-                  fontSize: "10pt",
-                  marginTop: "2px",
-                  lineHeight: "1.3",
-                }}
-              >
-                {vol.description}
-              </div>
-            )}
+            {vol.description &&
+              (Array.isArray(vol.description)
+                ? vol.description.some((d: string) => d.trim()) && (
+                    <ul
+                      style={{
+                        listStyleType: "disc",
+                        marginLeft: "15px",
+                        fontSize: "10pt",
+                        lineHeight: "1.3",
+                        paddingLeft: "12px",
+                        paddingRight: "12px",
+                      }}
+                    >
+                      {vol.description
+                        .filter((d: string) => d.trim())
+                        .map((desc: string, i: number) => (
+                          <li
+                            key={i}
+                            style={{ marginBottom: "1.5px", paddingLeft: "2px" }}
+                          >
+                            {desc.trim()}
+                          </li>
+                        ))}
+                    </ul>
+                  )
+                : vol.description && (
+                    <div
+                      style={{
+                        fontSize: "10pt",
+                        marginTop: "2px",
+                        lineHeight: "1.3",
+                      }}
+                    >
+                      {vol.description}
+                    </div>
+                  ))}
           </div>
         ))}
     </div>
@@ -699,7 +724,7 @@ export function LanguagesSection({ title, data }: SectionProps) {
 // ==========================================
 export function InterestsSection({ title, data }: SectionProps) {
   const hasContent = Array.isArray(data)
-    ? data.some((item: any) => item.name?.trim())
+    ? data.some((item: any) => item.interest?.trim())
     : data?.interests?.trim();
 
   if (!hasContent) return null;
@@ -718,8 +743,8 @@ export function InterestsSection({ title, data }: SectionProps) {
       >
         {Array.isArray(data)
           ? data
-              .filter((item: any) => item.name)
-              .map((item: any) => item.name)
+              .filter((item: any) => item.interest)
+              .map((item: any) => item.interest)
               .join(", ")
           : data.interests}
       </div>
@@ -731,22 +756,89 @@ export function InterestsSection({ title, data }: SectionProps) {
 // CUSTOM SECTION
 // ==========================================
 export function CustomSection({ title, data }: SectionProps) {
-  if (!data?.content?.trim()) return null;
+  if (!data?.some((entry: any) => entry.title)) return null;
 
   return (
     <div style={{ marginTop: "10px", marginBottom: "10px" }}>
       <SectionHeader title={title} />
-      <div
-        style={{
-          fontSize: "10pt",
-          lineHeight: "1.35",
-          marginTop: "5px",
-          paddingLeft: "12px",
-          paddingRight: "12px",
-        }}
-      >
-        {data.content}
-      </div>
+      {data
+        .filter((entry: any) => entry.title)
+        .map((entry: any, index: number) => (
+          <div
+            key={entry.id || index}
+            style={{
+              marginTop: "5px",
+              marginBottom: "7px",
+              paddingLeft: "12px",
+              paddingRight: "12px",
+            }}
+          >
+            <div
+              className="flex justify-between"
+              style={{ marginBottom: "1px" }}
+            >
+              <div style={{ fontWeight: "bold", fontSize: "11pt" }}>
+                {entry.title || ""}
+              </div>
+              <div style={{ fontSize: "11pt" }}>
+                {entry.startDate || entry.endDate
+                  ? `${entry.startDate || ""}${
+                      entry.startDate && entry.endDate ? " – " : ""
+                    }${entry.endDate || ""}`
+                  : ""}
+              </div>
+            </div>
+            {(entry.subtitle || entry.location) && (
+              <div
+                style={{
+                  fontSize: "10pt",
+                  fontStyle: "italic",
+                  marginBottom: "3px",
+                }}
+              >
+                {entry.subtitle || ""}
+                {entry.subtitle && entry.location ? " • " : ""}
+                {entry.location || ""}
+              </div>
+            )}
+            {entry.description &&
+              (Array.isArray(entry.description)
+                ? entry.description.some((d: string) => d.trim()) && (
+                    <ul
+                      style={{
+                        listStyleType: "disc",
+                        marginLeft: "15px",
+                        fontSize: "10pt",
+                        lineHeight: "1.3",
+                        paddingLeft: "12px",
+                        paddingRight: "12px",
+                      }}
+                    >
+                      {entry.description
+                        .filter((d: string) => d.trim())
+                        .map((desc: string, i: number) => (
+                          <li
+                            key={i}
+                            style={{ marginBottom: "1.5px", paddingLeft: "2px" }}
+                          >
+                            {desc.trim()}
+                          </li>
+                        ))}
+                    </ul>
+                  )
+                : entry.description && (
+                    <div
+                      style={{
+                        fontSize: "10pt",
+                        marginTop: "2px",
+                        lineHeight: "1.3",
+                      }}
+                    >
+                      {entry.description}
+                    </div>
+                  ))}
+          </div>
+        ))}
     </div>
   );
 }
