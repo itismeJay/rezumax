@@ -1,7 +1,6 @@
-// components/resume-editor/sortable-section-card.tsx
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import {
@@ -41,6 +40,10 @@ export function SortableSectionCard({
   const [isEditing, setIsEditing] = useState(false);
   const [editedTitle, setEditedTitle] = useState(title);
 
+  // Only initialize sortable on client to prevent SSR mismatch
+  const [sortableEnabled, setSortableEnabled] = useState(false);
+  useEffect(() => setSortableEnabled(true), []);
+
   // Drag-and-drop hook
   const {
     attributes,
@@ -74,14 +77,16 @@ export function SortableSectionCard({
       <Card className={!visible ? "opacity-50" : ""}>
         <CardHeader className="pb-3">
           <div className="flex items-center gap-2">
-            {/* Drag Handle */}
-            <button
-              {...attributes}
-              {...listeners}
-              className="cursor-grab active:cursor-grabbing p-1 hover:bg-accent rounded"
-            >
-              <GripVertical className="w-4 h-4 text-muted-foreground" />
-            </button>
+            {/* Drag Handle (only attach listeners on client to prevent SSR mismatch) */}
+            {sortableEnabled && (
+              <button
+                {...attributes}
+                {...listeners}
+                className="cursor-grab active:cursor-grabbing p-1 hover:bg-accent rounded"
+              >
+                <GripVertical className="w-4 h-4 text-muted-foreground" />
+              </button>
+            )}
 
             {/* Title or Edit Input */}
             {isEditing ? (

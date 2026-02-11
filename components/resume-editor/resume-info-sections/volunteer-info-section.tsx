@@ -54,7 +54,20 @@ export function VolunteerInfoSection({
   const [tempSectionName, setTempSectionName] = useState(sectionName);
 
   useEffect(() => {
-    setEntries(volunteerInfo);
+    // Normalize entries to ensure description is always an array
+    const normalizedEntries = (volunteerInfo || []).map((entry) => ({
+      id: entry.id || crypto.randomUUID(),
+      role: entry.role || "",
+      organization: entry.organization || "",
+      startDate: entry.startDate || "",
+      endDate: entry.endDate || "",
+      description: Array.isArray(entry.description)
+        ? entry.description
+        : entry.description
+          ? [entry.description]
+          : [""],
+    }));
+    setEntries(normalizedEntries);
   }, [volunteerInfo]);
 
   useEffect(() => {
@@ -69,7 +82,7 @@ export function VolunteerInfoSection({
 
   const handleAddEntry = () => {
     const newEntry: VolunteerEntry = {
-      id: crypto.randomUUID(), // ✅ Perfect!
+      id: crypto.randomUUID(),
       role: "",
       organization: "",
       startDate: "",
@@ -236,135 +249,146 @@ export function VolunteerInfoSection({
 
       {!collapsed && (
         <CardContent className="px-5 pb-5 space-y-6">
-          {entries.map((entry, index) => (
-            <div
-              key={entry.id}
-              className="space-y-4 p-4 rounded-lg border border-border bg-muted/20 relative"
-            >
-              {entries.length > 1 && (
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="absolute top-2 right-2 h-8 w-8 text-muted-foreground hover:text-destructive"
-                  onClick={() => handleRemoveEntry(entry.id)}
-                >
-                  <Trash2 className="w-4 h-4" />
-                </Button>
-              )}
+          {entries.map((entry, index) => {
+            // Ensure description is always an array
+            const descriptions = Array.isArray(entry.description)
+              ? entry.description
+              : [entry.description || ""];
 
-              <div className="space-y-2">
-                <Label className="text-xs text-muted-foreground font-medium">
-                  Role / Position
-                </Label>
-                <Input
-                  value={entry.role}
-                  onChange={(e) =>
-                    handleFieldChange(entry.id, "role", e.target.value)
-                  }
-                  placeholder="e.g., Volunteer Tutor"
-                  className="h-10"
-                />
-              </div>
+            return (
+              <div
+                key={entry.id}
+                className="space-y-4 p-4 rounded-lg border border-border bg-muted/20 relative"
+              >
+                {entries.length > 1 && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="absolute top-2 right-2 h-8 w-8 text-muted-foreground hover:text-destructive"
+                    onClick={() => handleRemoveEntry(entry.id)}
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                )}
 
-              <div className="space-y-2">
-                <Label className="text-xs text-muted-foreground font-medium">
-                  Organization
-                </Label>
-                <Input
-                  value={entry.organization}
-                  onChange={(e) =>
-                    handleFieldChange(entry.id, "organization", e.target.value)
-                  }
-                  placeholder="e.g., Local Community Center"
-                  className="h-10"
-                />
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label className="text-xs text-muted-foreground font-medium">
-                    Start Date
+                    Role / Position
                   </Label>
                   <Input
-                    value={entry.startDate}
+                    value={entry.role}
                     onChange={(e) =>
-                      handleFieldChange(entry.id, "startDate", e.target.value)
+                      handleFieldChange(entry.id, "role", e.target.value)
                     }
-                    placeholder="e.g., Jun 2022"
+                    placeholder="e.g., Volunteer Tutor"
                     className="h-10"
                   />
                 </div>
 
                 <div className="space-y-2">
                   <Label className="text-xs text-muted-foreground font-medium">
-                    End Date
+                    Organization
                   </Label>
                   <Input
-                    value={entry.endDate}
+                    value={entry.organization}
                     onChange={(e) =>
-                      handleFieldChange(entry.id, "endDate", e.target.value)
+                      handleFieldChange(
+                        entry.id,
+                        "organization",
+                        e.target.value,
+                      )
                     }
-                    placeholder="e.g., Present"
+                    placeholder="e.g., Local Community Center"
                     className="h-10"
                   />
                 </div>
-              </div>
 
-              <div className="space-y-3">
-                <Label className="text-xs text-muted-foreground font-medium">
-                  Key Contributions
-                </Label>
-                {entry.description.map((desc, descIndex) => (
-                  <div key={descIndex} className="flex gap-2 items-start">
-                    <span className="text-muted-foreground mt-3 text-xs">
-                      •
-                    </span>
-                    <Textarea
-                      placeholder="Tutored 15+ students in mathematics..."
-                      className="min-h-[60px] text-sm resize-none flex-1"
-                      value={desc}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label className="text-xs text-muted-foreground font-medium">
+                      Start Date
+                    </Label>
+                    <Input
+                      value={entry.startDate}
                       onChange={(e) =>
-                        handleDescriptionChange(
-                          entry.id,
-                          descIndex,
-                          e.target.value,
-                        )
+                        handleFieldChange(entry.id, "startDate", e.target.value)
                       }
+                      placeholder="e.g., Jun 2022"
+                      className="h-10"
                     />
-                    {entry.description.length > 1 && (
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8 text-muted-foreground hover:text-destructive"
-                        onClick={() =>
-                          handleDeleteDescription(entry.id, descIndex)
-                        }
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </Button>
-                    )}
                   </div>
-                ))}
 
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  className="w-full gap-2 border-dashed"
-                  onClick={() => handleAddDescription(entry.id)}
-                >
-                  <Plus className="w-3.5 h-3.5" />
-                  Add Contribution
-                </Button>
-              </div>
+                  <div className="space-y-2">
+                    <Label className="text-xs text-muted-foreground font-medium">
+                      End Date
+                    </Label>
+                    <Input
+                      value={entry.endDate}
+                      onChange={(e) =>
+                        handleFieldChange(entry.id, "endDate", e.target.value)
+                      }
+                      placeholder="e.g., Present"
+                      className="h-10"
+                    />
+                  </div>
+                </div>
 
-              <div className="absolute -top-2 -left-2 bg-primary text-primary-foreground text-xs font-semibold rounded-full w-6 h-6 flex items-center justify-center">
-                {index + 1}
+                <div className="space-y-3">
+                  <Label className="text-xs text-muted-foreground font-medium">
+                    Key Contributions
+                  </Label>
+                  {descriptions.map((desc, descIndex) => (
+                    <div key={descIndex} className="flex gap-2 items-start">
+                      <span className="text-muted-foreground mt-3 text-xs">
+                        •
+                      </span>
+                      <Textarea
+                        placeholder="Tutored 15+ students in mathematics..."
+                        className="min-h-[60px] text-sm resize-none flex-1"
+                        value={desc}
+                        onChange={(e) =>
+                          handleDescriptionChange(
+                            entry.id,
+                            descIndex,
+                            e.target.value,
+                          )
+                        }
+                      />
+                      {descriptions.length > 1 && (
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                          onClick={() =>
+                            handleDeleteDescription(entry.id, descIndex)
+                          }
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </Button>
+                      )}
+                    </div>
+                  ))}
+
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="w-full gap-2 border-dashed"
+                    onClick={() => handleAddDescription(entry.id)}
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    Add Contribution
+                  </Button>
+                </div>
+
+                <div className="absolute -top-2 -left-2 bg-primary text-primary-foreground text-xs font-semibold rounded-full w-6 h-6 flex items-center justify-center">
+                  {index + 1}
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
 
           <Button
             type="button"

@@ -55,7 +55,17 @@ export function PublicationsInfoSection({
   const [tempSectionName, setTempSectionName] = useState(sectionName);
 
   useEffect(() => {
-    setEntries(publicationsInfo);
+    // Normalize entries to ensure all fields are strings (not undefined)
+    const normalizedEntries = (publicationsInfo || []).map((entry) => ({
+      id: entry.id || crypto.randomUUID(),
+      title: entry.title || "",
+      authors: entry.authors || "",
+      venue: entry.venue || "",
+      date: entry.date || "",
+      doi: entry.doi || "",
+      description: entry.description || "",
+    }));
+    setEntries(normalizedEntries);
   }, [publicationsInfo]);
 
   useEffect(() => {
@@ -196,7 +206,7 @@ export function PublicationsInfoSection({
         <CardContent className="px-5 pb-5 space-y-6">
           {entries.map((entry, index) => (
             <div
-              key={entry.id}
+              key={`entry-${entry.id}-${index}`} // ✅ fixed key
               className="space-y-4 p-4 rounded-lg border border-border bg-muted/20 relative"
             >
               {entries.length > 1 && (

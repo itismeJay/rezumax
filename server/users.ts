@@ -42,6 +42,21 @@ export async function getCurrentUserWithData() {
 // ✅ NEW: Get user's recent resumes
 export async function getUserRecentResumes(userId: string, limit: number = 4) {
   try {
+    // Get current session
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
+
+    if (!session?.user?.id) {
+      redirect("/login"); // or return [] if in API context
+    }
+
+    // ✅ Enforce authorization: session user must match requested userId
+    if (session.user.id !== userId) {
+      console.warn("Unauthorized attempt to fetch another user's resumes");
+      redirect("/login"); // or return [] if in API context
+    }
+
     const resumes = await db
       .select({
         id: resume.id,

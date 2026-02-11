@@ -10,6 +10,7 @@ import { getUserDashboardStats } from "@/server/user-dashboard-stats";
 import { formatDashboardStats } from "@/lib/format-stats"; // ✅ NEW: Import formatter
 import MotionWrapper from "@/components/dashboard/wrapper/motion-wrapper";
 import { CreateResumeButton } from "@/components/dashboard/create-resume-button";
+import Link from "next/link";
 
 /**
  * Dashboard page - Shows user overview and recent activity
@@ -65,10 +66,18 @@ export default async function DashboardPage() {
               <StatsCard key={stat.label} {...stat} />
             ))}
           </div>
-
           {/* Recent Resumes */}
           <div className="mb-8">
-            <h2 className="text-lg font-semibold mb-4">Recent Resumes</h2>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold">Recent Resumes</h2>
+
+              <Link
+                href="/dashboard/resumes"
+                className="text-sm font-medium text-primary hover:underline transition-colors"
+              >
+                View All Resumes
+              </Link>
+            </div>
 
             {recentResumes.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

@@ -203,25 +203,30 @@ export function createDefaultSectionData(type: SectionType): any {
     case "publications":
       return [
         {
+          id: crypto.randomUUID(),
           title: "",
-          publisher: "",
+          authors: "",
+          venue: "",
           date: "",
-          link: "",
+          doi: "",
+          description: "",
         },
       ];
     case "volunteer":
       return [
         {
+          id: crypto.randomUUID(),
           role: "",
           organization: "",
           startDate: "",
           endDate: "",
-          description: "",
+          description: [""],
         },
       ];
     case "languages":
       return [
         {
+          id: crypto.randomUUID(),
           name: "",
           proficiency: "",
         },
@@ -229,7 +234,8 @@ export function createDefaultSectionData(type: SectionType): any {
     case "interests":
       return [
         {
-          name: "",
+          id: crypto.randomUUID(),
+          interest: "",
         },
       ];
     case "custom":
