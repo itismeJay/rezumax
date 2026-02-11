@@ -117,7 +117,7 @@ export default function ResumeEditorWrapper({
         setSaveStatus(null);
       }
     },
-    1000,
+    2000,
   );
 
   // ✅ STEP 6.4: Personal info handler (unchanged)

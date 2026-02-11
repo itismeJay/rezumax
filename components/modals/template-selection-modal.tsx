@@ -32,7 +32,7 @@ export function TemplateSelectionModal({
   const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
 
   const selectedTemplateData: ResumeTemplate | undefined = ResumeTemplates.find(
-    (t) => t.id === selectedTemplate
+    (t) => t.id === selectedTemplate,
   );
 
   const handleApplyTemplate = () => {
@@ -108,7 +108,7 @@ export function TemplateSelectionModal({
                     "relative aspect-[8.5/11] w-full max-w-[120px] mx-auto rounded-md overflow-hidden border-2 transition-all",
                     selectedTemplate === template.id
                       ? "border-primary ring-2 ring-primary/20"
-                      : "border-border hover:border-primary/50"
+                      : "border-border hover:border-primary/50",
                   )}
                 >
                   <Image

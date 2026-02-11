@@ -238,7 +238,7 @@ export function LeadershipInfoSection({
         <CardContent className="px-5 pb-5 space-y-6">
           {entries.map((entry, index) => (
             <div
-              key={entry.id}
+              key={`entry-${entry.id}-${index}`} // ✅ fixed outer key
               className="space-y-4 p-4 rounded-lg border border-border bg-muted/20 relative"
             >
               {entries.length > 1 && (
@@ -317,7 +317,7 @@ export function LeadershipInfoSection({
                 </Label>
                 {entry.achievements.map((achievement, achievementIndex) => (
                   <div
-                    key={achievementIndex}
+                    key={`${entry.id}-achievement-${achievementIndex}`} // ✅ fixed nested key
                     className="flex gap-2 items-start"
                   >
                     <span className="text-muted-foreground mt-3 text-xs">

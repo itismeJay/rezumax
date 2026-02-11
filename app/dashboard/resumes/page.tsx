@@ -19,8 +19,8 @@ interface Resume {
   id: string;
   title: string;
   score: number | null;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string; // <-- changed from Date
+  updatedAt: string; // <-- changed from Date
   userId: string;
   template: string;
 }
@@ -186,6 +186,11 @@ export default function ResumesPage() {
                 <ResumeCardSkeleton key={index} />
               ))}
             </div>
+          )}
+
+          {/* Empty State: No resumes at all */}
+          {!loading && !error && resumes.length === 0 && (
+            <EmptyState onCreateClick={() => setShowDocumentModal(true)} />
           )}
 
           {/* Resumes Grid */}
