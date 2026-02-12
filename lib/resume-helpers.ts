@@ -123,6 +123,7 @@ export function createDefaultSectionData(type: SectionType): any {
     case "education":
       return [
         {
+          id: crypto.randomUUID(),
           school: "",
           degree: "",
           location: "",
@@ -134,6 +135,7 @@ export function createDefaultSectionData(type: SectionType): any {
     case "experience":
       return [
         {
+          id: crypto.randomUUID(),
           company: "",
           position: "",
           location: "",
@@ -145,6 +147,7 @@ export function createDefaultSectionData(type: SectionType): any {
     case "projects":
       return [
         {
+          id: crypto.randomUUID(),
           name: "",
           technologies: "",
           description: "",
@@ -166,6 +169,7 @@ export function createDefaultSectionData(type: SectionType): any {
     case "certifications":
       return [
         {
+          id: crypto.randomUUID(),
           name: "",
           issuer: "",
           date: "",
@@ -175,6 +179,7 @@ export function createDefaultSectionData(type: SectionType): any {
     case "awards":
       return [
         {
+          id: crypto.randomUUID(),
           title: "",
           issuer: "",
           date: "",
@@ -184,6 +189,7 @@ export function createDefaultSectionData(type: SectionType): any {
     case "leadership":
       return [
         {
+          id: crypto.randomUUID(),
           role: "",
           organization: "",
           startDate: "",
@@ -194,6 +200,7 @@ export function createDefaultSectionData(type: SectionType): any {
     case "research":
       return [
         {
+          id: crypto.randomUUID(),
           title: "",
           institution: "",
           date: "",

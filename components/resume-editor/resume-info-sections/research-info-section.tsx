@@ -46,7 +46,10 @@ export function ResearchInfoSection({
   sectionName: externalSectionName,
   onSectionNameChange,
 }: ResearchSectionProps) {
-  const [entries, setEntries] = useState<ResearchEntry[]>(researchInfo);
+  const ensureIds = (items: ResearchEntry[]) =>
+    items.map((e) => ({ ...e, id: e.id || crypto.randomUUID() }));
+
+  const [entries, setEntries] = useState<ResearchEntry[]>(() => ensureIds(researchInfo));
   const [collapsed, setCollapsed] = useState(false);
   const [visible, setVisible] = useState(externalVisible ?? true);
   const [isRenamingSection, setIsRenamingSection] = useState(false);
@@ -55,7 +58,7 @@ export function ResearchInfoSection({
   const [tempSectionName, setTempSectionName] = useState(sectionName);
 
   useEffect(() => {
-    setEntries(researchInfo);
+    setEntries(ensureIds(researchInfo));
   }, [researchInfo]);
 
   useEffect(() => {

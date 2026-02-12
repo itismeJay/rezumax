@@ -44,7 +44,10 @@ export function AwardsInfoSection({
   sectionName: externalSectionName,
   onSectionNameChange,
 }: AwardsSectionProps) {
-  const [entries, setEntries] = useState<AwardEntry[]>(awardsInfo);
+  const ensureIds = (items: AwardEntry[]) =>
+    items.map((e) => ({ ...e, id: e.id || crypto.randomUUID() }));
+
+  const [entries, setEntries] = useState<AwardEntry[]>(() => ensureIds(awardsInfo));
   const [collapsed, setCollapsed] = useState(false);
   const [visible, setVisible] = useState(externalVisible ?? true);
   const [isRenamingSection, setIsRenamingSection] = useState(false);
@@ -53,7 +56,7 @@ export function AwardsInfoSection({
   const [tempSectionName, setTempSectionName] = useState(sectionName);
 
   useEffect(() => {
-    setEntries(awardsInfo);
+    setEntries(ensureIds(awardsInfo));
   }, [awardsInfo]);
 
   useEffect(() => {

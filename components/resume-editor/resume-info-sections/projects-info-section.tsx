@@ -49,7 +49,10 @@ export function ProjectsInfoSection({
   sectionName: externalSectionName,
   onSectionNameChange,
 }: ProjectsInfoSectionProps) {
-  const [entries, setEntries] = useState<ProjectEntry[]>(projectsInfo);
+  const ensureIds = (items: ProjectEntry[]) =>
+    items.map((e) => ({ ...e, id: e.id || crypto.randomUUID() }));
+
+  const [entries, setEntries] = useState<ProjectEntry[]>(() => ensureIds(projectsInfo));
   const [collapsed, setCollapsed] = useState(false);
   const [visible, setVisible] = useState<boolean>(externalVisible ?? true);
   const [isRenamingSection, setIsRenamingSection] = useState(false);
@@ -60,7 +63,7 @@ export function ProjectsInfoSection({
 
   // Sync entries state when projectsInfo prop changes
   useEffect(() => {
-    setEntries(projectsInfo);
+    setEntries(ensureIds(projectsInfo));
   }, [projectsInfo]);
 
   // Sync visible state with external prop
