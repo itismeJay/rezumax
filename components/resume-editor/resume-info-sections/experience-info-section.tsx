@@ -50,12 +50,14 @@ export function ExperienceInfoSection({
   sectionName: externalSectionName, // Already here ✅
   onSectionNameChange, // Already here ✅
 }: ExperienceSectionProps) {
-  const [entries, setEntries] = useState<ExperienceEntry[]>(experienceInfo);
+  const ensureIds = (items: ExperienceEntry[]) =>
+    items.map((e) => ({ ...e, id: e.id || crypto.randomUUID() }));
+
+  const [entries, setEntries] = useState<ExperienceEntry[]>(() => ensureIds(experienceInfo));
   const [collapsed, setCollapsed] = useState(false);
   const [visible, setVisible] = useState<boolean>(externalVisible ?? true);
   const [isRenamingSection, setIsRenamingSection] = useState(false);
 
-  // ✅ FIX 2: Change from useState to derived value
   const sectionName = externalSectionName || "Experience";
 
   const [tempSectionName, setTempSectionName] = useState(sectionName);
@@ -63,7 +65,7 @@ export function ExperienceInfoSection({
 
   // Sync entries state when experienceInfo prop changes
   useEffect(() => {
-    setEntries(experienceInfo);
+    setEntries(ensureIds(experienceInfo));
   }, [experienceInfo]);
 
   // Sync visible state with external prop

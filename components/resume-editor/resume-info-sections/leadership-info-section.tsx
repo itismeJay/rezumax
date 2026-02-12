@@ -45,7 +45,10 @@ export function LeadershipInfoSection({
   sectionName: externalSectionName,
   onSectionNameChange,
 }: LeadershipSectionProps) {
-  const [entries, setEntries] = useState<LeadershipEntry[]>(leadershipInfo);
+  const ensureIds = (items: LeadershipEntry[]) =>
+    items.map((e) => ({ ...e, id: e.id || crypto.randomUUID() }));
+
+  const [entries, setEntries] = useState<LeadershipEntry[]>(() => ensureIds(leadershipInfo));
   const [collapsed, setCollapsed] = useState(false);
   const [visible, setVisible] = useState(externalVisible ?? true);
   const [isRenamingSection, setIsRenamingSection] = useState(false);
@@ -54,7 +57,7 @@ export function LeadershipInfoSection({
   const [tempSectionName, setTempSectionName] = useState(sectionName);
 
   useEffect(() => {
-    setEntries(leadershipInfo);
+    setEntries(ensureIds(leadershipInfo));
   }, [leadershipInfo]);
 
   useEffect(() => {

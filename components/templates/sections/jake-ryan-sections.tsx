@@ -21,8 +21,10 @@ function SectionHeader({ title }: { title: string }) {
         fontWeight: "bold",
         letterSpacing: "1px",
         fontVariant: "small-caps",
-        marginBottom: "3px",
-        paddingBottom: "2px",
+        margin: "0",
+        marginTop: "2px",
+        marginBottom: "6px",
+        paddingBottom: "6px",
         borderBottom: "0.75px solid #000",
       }}
     >
@@ -44,7 +46,6 @@ export function SummarySection({ title, data }: SectionProps) {
         style={{
           fontSize: "10pt",
           lineHeight: "1.35",
-          marginTop: "5px",
           paddingLeft: "12px",
           paddingRight: "12px",
           textAlign: "justify",
@@ -71,15 +72,17 @@ export function EducationSection({ title, data }: SectionProps) {
           <div
             key={edu.id || index}
             style={{
-              marginTop: "5px",
               marginBottom: "5px",
               paddingLeft: "12px",
               paddingRight: "12px",
             }}
           >
             <div
-              className="flex justify-between"
-              style={{ marginBottom: "1px" }}
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                marginBottom: "1px",
+              }}
             >
               <div style={{ fontWeight: "bold", fontSize: "11pt" }}>
                 {edu.school || ""}
@@ -87,8 +90,12 @@ export function EducationSection({ title, data }: SectionProps) {
               <div style={{ fontSize: "11pt" }}>{edu.location || ""}</div>
             </div>
             <div
-              className="flex justify-between"
-              style={{ fontSize: "10pt", fontStyle: "italic" }}
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                fontSize: "10pt",
+                fontStyle: "italic",
+              }}
             >
               <div>
                 {edu.degree || ""} {edu.gpa ? `(GPA: ${edu.gpa})` : ""}
@@ -127,15 +134,17 @@ export function ExperienceSection({ title, data }: SectionProps) {
           <div
             key={exp.id || index}
             style={{
-              marginTop: "5px",
               marginBottom: "7px",
               paddingLeft: "12px",
               paddingRight: "12px",
             }}
           >
             <div
-              className="flex justify-between"
-              style={{ marginBottom: "1px" }}
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                marginBottom: "1px",
+              }}
             >
               <div style={{ fontWeight: "bold", fontSize: "11pt" }}>
                 {exp.position || ""}
@@ -149,8 +158,9 @@ export function ExperienceSection({ title, data }: SectionProps) {
               </div>
             </div>
             <div
-              className="flex justify-between"
               style={{
+                display: "flex",
+                justifyContent: "space-between",
                 fontSize: "10pt",
                 fontStyle: "italic",
                 marginBottom: "3px",
@@ -204,15 +214,17 @@ export function ProjectsSection({ title, data }: SectionProps) {
           <div
             key={project.id || index}
             style={{
-              marginTop: "5px",
               marginBottom: "7px",
               paddingLeft: "12px",
               paddingRight: "12px",
             }}
           >
             <div
-              className="flex justify-between"
-              style={{ marginBottom: "3px" }}
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                marginBottom: "3px",
+              }}
             >
               <div style={{ fontSize: "10pt" }}>
                 <span style={{ fontWeight: "bold" }}>{project.name}</span>
@@ -287,7 +299,6 @@ export function SkillsSection({ title, data }: SectionProps) {
         style={{
           fontSize: "10pt",
           lineHeight: "1.35",
-          marginTop: "5px",
           paddingLeft: "12px",
           paddingRight: "12px",
         }}
@@ -332,15 +343,17 @@ export function CertificationsSection({ title, data }: SectionProps) {
           <div
             key={cert.id || index}
             style={{
-              marginTop: "5px",
               marginBottom: "5px",
               paddingLeft: "12px",
               paddingRight: "12px",
             }}
           >
             <div
-              className="flex justify-between"
-              style={{ marginBottom: "1px" }}
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                marginBottom: "1px",
+              }}
             >
               <div style={{ fontSize: "10pt" }}>
                 <strong>{cert.name}</strong>
@@ -376,15 +389,17 @@ export function AwardsSection({ title, data }: SectionProps) {
           <div
             key={award.id || index}
             style={{
-              marginTop: "5px",
               marginBottom: "5px",
               paddingLeft: "12px",
               paddingRight: "12px",
             }}
           >
             <div
-              className="flex justify-between"
-              style={{ marginBottom: "1px" }}
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                marginBottom: "1px",
+              }}
             >
               <div style={{ fontSize: "10pt" }}>
                 <strong>{award.title}</strong>
@@ -426,15 +441,17 @@ export function LeadershipSection({ title, data }: SectionProps) {
           <div
             key={role.id || index}
             style={{
-              marginTop: "5px",
               marginBottom: "7px",
               paddingLeft: "12px",
               paddingRight: "12px",
             }}
           >
             <div
-              className="flex justify-between"
-              style={{ marginBottom: "1px" }}
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                marginBottom: "1px",
+              }}
             >
               <div style={{ fontWeight: "bold", fontSize: "11pt" }}>
                 {role.role || ""}
@@ -501,15 +518,17 @@ export function ResearchSection({ title, data }: SectionProps) {
           <div
             key={research.id || index}
             style={{
-              marginTop: "5px",
               marginBottom: "7px",
               paddingLeft: "12px",
               paddingRight: "12px",
             }}
           >
             <div
-              className="flex justify-between"
-              style={{ marginBottom: "1px" }}
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                marginBottom: "1px",
+              }}
             >
               <div style={{ fontWeight: "bold", fontSize: "11pt" }}>
                 {research.title}
@@ -564,7 +583,6 @@ export function PublicationsSection({ title, data }: SectionProps) {
           <div
             key={pub.id || index}
             style={{
-              marginTop: "5px",
               marginBottom: "5px",
               paddingLeft: "12px",
               paddingRight: "12px",
@@ -618,15 +636,17 @@ export function VolunteerSection({ title, data }: SectionProps) {
           <div
             key={vol.id || index}
             style={{
-              marginTop: "5px",
               marginBottom: "7px",
               paddingLeft: "12px",
               paddingRight: "12px",
             }}
           >
             <div
-              className="flex justify-between"
-              style={{ marginBottom: "1px" }}
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                marginBottom: "1px",
+              }}
             >
               <div style={{ fontWeight: "bold", fontSize: "11pt" }}>
                 {vol.role || ""}
@@ -666,7 +686,10 @@ export function VolunteerSection({ title, data }: SectionProps) {
                         .map((desc: string, i: number) => (
                           <li
                             key={i}
-                            style={{ marginBottom: "1.5px", paddingLeft: "2px" }}
+                            style={{
+                              marginBottom: "1.5px",
+                              paddingLeft: "2px",
+                            }}
                           >
                             {desc.trim()}
                           </li>
@@ -702,7 +725,6 @@ export function LanguagesSection({ title, data }: SectionProps) {
       <div
         style={{
           fontSize: "10pt",
-          marginTop: "5px",
           paddingLeft: "12px",
           paddingRight: "12px",
         }}
@@ -736,7 +758,6 @@ export function InterestsSection({ title, data }: SectionProps) {
         style={{
           fontSize: "10pt",
           lineHeight: "1.35",
-          marginTop: "5px",
           paddingLeft: "12px",
           paddingRight: "12px",
         }}
@@ -767,15 +788,17 @@ export function CustomSection({ title, data }: SectionProps) {
           <div
             key={entry.id || index}
             style={{
-              marginTop: "5px",
               marginBottom: "7px",
               paddingLeft: "12px",
               paddingRight: "12px",
             }}
           >
             <div
-              className="flex justify-between"
-              style={{ marginBottom: "1px" }}
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                marginBottom: "1px",
+              }}
             >
               <div style={{ fontWeight: "bold", fontSize: "11pt" }}>
                 {entry.title || ""}
@@ -819,7 +842,10 @@ export function CustomSection({ title, data }: SectionProps) {
                         .map((desc: string, i: number) => (
                           <li
                             key={i}
-                            style={{ marginBottom: "1.5px", paddingLeft: "2px" }}
+                            style={{
+                              marginBottom: "1.5px",
+                              paddingLeft: "2px",
+                            }}
                           >
                             {desc.trim()}
                           </li>

@@ -60,20 +60,21 @@ export function EducationInfoSection({
   sectionName: externalSectionName, // 👈 Rename to avoid conflict
   onSectionNameChange, // 👈 NEW: Add this to destructuring
 }: EducationInfoSectionProps) {
-  const [entries, setEntries] = useState<EducationEntry[]>(educationInfo);
+  const ensureIds = (items: EducationEntry[]) =>
+    items.map((e) => ({ ...e, id: e.id || crypto.randomUUID() }));
+
+  const [entries, setEntries] = useState<EducationEntry[]>(() => ensureIds(educationInfo));
   const [collapsed, setCollapsed] = useState(false);
   const [visible, setVisible] = useState<boolean>(externalVisible ?? true);
   const [isRenamingSection, setIsRenamingSection] = useState(false);
 
-  // 👇 CHANGED: Derive from prop or use default
   const sectionName = externalSectionName || "Education";
 
-  // 👇 KEEP: Still need temp state for the input field
   const [tempSectionName, setTempSectionName] = useState(sectionName);
 
   // Sync entries state when educationInfo prop changes
   useEffect(() => {
-    setEntries(educationInfo);
+    setEntries(ensureIds(educationInfo));
   }, [educationInfo]);
 
   // Sync visible state with external prop

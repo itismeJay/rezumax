@@ -50,6 +50,7 @@ import { ExperienceInfoSection } from "./resume-info-sections/experience-info-se
 import { ProjectsInfoSection } from "./resume-info-sections/projects-info-section";
 import { SkillsInfoSection } from "./resume-info-sections/skills-info-section";
 import { ResumePreview } from "./resume-preview";
+import { DownloadPDFButton } from "@/components/pdf/download-button";
 
 // NEW: Import helpers and new components
 import {
@@ -85,7 +86,7 @@ export default function ResumeEditorWrapper({
 
   const [saveStatus, setSaveStatus] = useState<"saving" | "saved" | null>(null);
   const [isSaving, setIsSaving] = useState(false);
-  const [zoomLevel, setZoomLevel] = useState(0.75);
+  const [zoomLevel, setZoomLevel] = useState(0.9);
 
   // ✅ STEP 6.2: Setup drag-and-drop sensors
   const sensors = useSensors(
@@ -387,6 +388,12 @@ export default function ResumeEditorWrapper({
     }
   };
 
+  // Generate filename from user's name
+  const getFileName = () => {
+    const name = resumeContent.personalInfo?.fullName || "Resume";
+    return `${name.replace(/\s+/g, "_")}_Resume.pdf`;
+  };
+
   return (
     <div className="min-h-screen bg-background flex flex-col h-screen">
       {/* Header - UNCHANGED */}
@@ -418,10 +425,7 @@ export default function ResumeEditorWrapper({
               <Upload className="w-4 h-4" />
               <span className="hidden sm:inline">Import</span>
             </Button>
-            <Button variant="outline" size="sm" className="gap-2">
-              <Download className="w-4 h-4" />
-              <span className="hidden sm:inline">Export PDF</span>
-            </Button>
+
             <Button
               variant="default"
               size="sm"
@@ -432,6 +436,16 @@ export default function ResumeEditorWrapper({
               <Save className="w-4 h-4" />
               <span className="hidden sm:inline">Save</span>
             </Button>
+
+            {/* ✅ REPLACE OLD DOWNLOAD BUTTON WITH NEW ONE */}
+            <DownloadPDFButton
+              resumeId={resumeData.id}
+              fileName={getFileName()}
+              resumeContent={resumeContent}
+              template={resumeData.template}
+              variant="outline"
+              size="sm"
+            />
           </div>
         </div>
       </header>

@@ -20,97 +20,96 @@ export default function JakeRyanResume({ data }: JakeRyanResumeProps) {
     .sort((a, b) => a.order - b.order);
 
   return (
-    <div className="flex justify-center min-h-screen">
-      <div
-        className="bg-white shadow-lg"
-        style={{
-          width: "816px",
-          minHeight: "1056px",
-          padding: "50px 60px",
-          fontFamily: '"Computer Modern Roman", "Latin Modern Roman", serif',
-          fontSize: "11pt",
-          lineHeight: "1.3",
-          color: "#000",
-        }}
-      >
-        {/* HEADER */}
-        <div className="text-center" style={{ marginBottom: "6px" }}>
-          <h1
-            style={{
-              fontSize: "22pt",
-              fontWeight: "bold",
-              letterSpacing: "0.5px",
-              marginBottom: "1px",
-              fontVariant: "small-caps",
-            }}
-          >
-            {data.personalInfo?.fullName || ""}
-          </h1>
-          <div style={{ fontSize: "10pt", marginTop: "1px" }}>
-            {data.personalInfo?.phone && `${data.personalInfo.phone} · `}
-            {data.personalInfo?.email && (
+    <div
+      style={{
+        width: "816px",
+        minHeight: "1056px",
+        padding: "40px 50px",
+        fontFamily: '"Times New Roman", "Georgia", serif',
+        fontSize: "11pt",
+        lineHeight: "1.3",
+        color: "#000",
+        backgroundColor: "#fff",
+        boxShadow: "0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)",
+      }}
+    >
+      {/* HEADER */}
+      <div style={{ textAlign: "center", marginBottom: "6px" }}>
+        <h1
+          style={{
+            fontSize: "22pt",
+            fontWeight: "bold",
+            letterSpacing: "0.5px",
+            marginBottom: "1px",
+            fontVariant: "small-caps",
+          }}
+        >
+          {data.personalInfo?.fullName || ""}
+        </h1>
+        <div style={{ fontSize: "10pt", marginTop: "1px" }}>
+          {data.personalInfo?.phone && `${data.personalInfo.phone} · `}
+          {data.personalInfo?.email && (
+            <a
+              href={`mailto:${data.personalInfo.email}`}
+              style={{ color: "#000", textDecoration: "underline" }}
+            >
+              {data.personalInfo.email}
+            </a>
+          )}
+          {data.personalInfo?.linkedin && (
+            <>
+              {" · "}
               <a
-                href={`mailto:${data.personalInfo.email}`}
+                href={
+                  data.personalInfo.linkedin.startsWith("http")
+                    ? data.personalInfo.linkedin
+                    : `https://linkedin.com/in/${data.personalInfo.linkedin}`
+                }
                 style={{ color: "#000", textDecoration: "underline" }}
+                target="_blank"
+                rel="noopener noreferrer"
               >
-                {data.personalInfo.email}
+                {data.personalInfo.linkedin
+                  .replace(/^https?:\/\/(www\.)?/, "")
+                  .replace(/\/$/, "")}
               </a>
-            )}
-            {data.personalInfo?.linkedin && (
-              <>
-                {" · "}
-                <a
-                  href={
-                    data.personalInfo.linkedin.startsWith("http")
-                      ? data.personalInfo.linkedin
-                      : `https://linkedin.com/in/${data.personalInfo.linkedin}`
-                  }
-                  style={{ color: "#000", textDecoration: "underline" }}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {data.personalInfo.linkedin
-                    .replace(/^https?:\/\/(www\.)?/, "")
-                    .replace(/\/$/, "")}
-                </a>
-              </>
-            )}
-            {data.personalInfo?.github && (
-              <>
-                {" · "}
-                <a
-                  href={
-                    data.personalInfo.github.startsWith("http")
-                      ? data.personalInfo.github
-                      : `https://github.com/${data.personalInfo.github}`
-                  }
-                  style={{ color: "#000", textDecoration: "underline" }}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {data.personalInfo.github
-                    .replace(/^https?:\/\/(www\.)?/, "")
-                    .replace(/\/$/, "")}
-                </a>
-              </>
-            )}
-          </div>
+            </>
+          )}
+          {data.personalInfo?.github && (
+            <>
+              {" · "}
+              <a
+                href={
+                  data.personalInfo.github.startsWith("http")
+                    ? data.personalInfo.github
+                    : `https://github.com/${data.personalInfo.github}`
+                }
+                style={{ color: "#000", textDecoration: "underline" }}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {data.personalInfo.github
+                  .replace(/^https?:\/\/(www\.)?/, "")
+                  .replace(/\/$/, "")}
+              </a>
+            </>
+          )}
         </div>
-
-        {/* ✅ DYNAMIC SECTIONS - NO SWITCH! */}
-        {visibleSections.map((section) => {
-          const SectionComponent = getSectionComponent(section.type);
-          if (!SectionComponent) return null;
-
-          return (
-            <SectionComponent
-              key={section.id}
-              title={section.title}
-              data={section.data}
-            />
-          );
-        })}
       </div>
+
+      {/* ✅ DYNAMIC SECTIONS - NO SWITCH! */}
+      {visibleSections.map((section) => {
+        const SectionComponent = getSectionComponent(section.type);
+        if (!SectionComponent) return null;
+
+        return (
+          <SectionComponent
+            key={section.id}
+            title={section.title}
+            data={section.data}
+          />
+        );
+      })}
     </div>
   );
 }
