@@ -34,9 +34,8 @@ export function DownloadPDFButton({
     try {
       // Dynamically import to avoid Next.js SSR bundling issues with pako
       const { pdf } = await import("@react-pdf/renderer");
-      const { JakeRyanPdfDocument } = await import(
-        "@/components/pdf/jake-ryan-pdf"
-      );
+      const { JakeRyanPdfDocument } =
+        await import("@/components/pdf/jake-ryan-pdf");
 
       // Build the PDF document based on the template
       let doc: React.ReactElement<any>;
