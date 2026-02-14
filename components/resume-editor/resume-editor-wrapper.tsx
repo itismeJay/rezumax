@@ -57,7 +57,7 @@ import {
   migrateToNewFormat,
   getDefaultSectionTitle,
   createDefaultSectionData,
-} from "@/lib/resume-helpers";
+} from "@/lib/resume/resume-helpers";
 import { AddSectionMenu } from "@/components/resume-editor/drag-and-drop-helpers/add-section-menu";
 import { SortableSectionCard } from "./drag-and-drop-helpers/sortable-section-card";
 import { CertificationsSection } from "./resume-info-sections/certifications-info-section";
@@ -86,7 +86,7 @@ export default function ResumeEditorWrapper({
 
   const [saveStatus, setSaveStatus] = useState<"saving" | "saved" | null>(null);
   const [isSaving, setIsSaving] = useState(false);
-  const [zoomLevel, setZoomLevel] = useState(0.9);
+  const [zoomLevel, setZoomLevel] = useState(1.1);
 
   // ✅ STEP 6.2: Setup drag-and-drop sensors
   const sensors = useSensors(

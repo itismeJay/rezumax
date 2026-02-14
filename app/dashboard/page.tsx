@@ -7,7 +7,7 @@ import { ResumeCard } from "@/components/dashboard/resume-card";
 import { StatsCard } from "@/components/dashboard/stats-card";
 import { getCurrentUserWithData, getUserRecentResumes } from "@/server/users"; // ✅ NEW: Import stats function
 import { getUserDashboardStats } from "@/server/user-dashboard-stats";
-import { formatDashboardStats } from "@/lib/format-stats"; // ✅ NEW: Import formatter
+import { formatDashboardStats } from "@/lib/resume/format-stats"; // ✅ NEW: Import formatter
 import MotionWrapper from "@/components/dashboard/wrapper/motion-wrapper";
 import { CreateResumeButton } from "@/components/dashboard/create-resume-button";
 import Link from "next/link";
