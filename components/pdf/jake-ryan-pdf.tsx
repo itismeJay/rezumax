@@ -23,7 +23,7 @@ const s = StyleSheet.create({
   page: {
     paddingTop: 30,
     paddingBottom: 30,
-    paddingHorizontal: 48,
+    paddingHorizontal: 38,
     fontFamily: "Times-Roman",
     fontSize: 10.5,
     lineHeight: 1.3,
@@ -73,7 +73,7 @@ const s = StyleSheet.create({
   entryWrapLarge: { marginBottom: 5, paddingHorizontal: 10 },
 
   // Bullets
-  bulletList: { marginLeft: 14, paddingHorizontal: 10 },
+  bulletList: { marginLeft: 2, paddingHorizontal: 5 },
   bulletItem: {
     fontSize: 10,
     lineHeight: 1.3,
@@ -165,7 +165,11 @@ function EducationPdf({ title, data }: { title: string; data: any[] }) {
                 {edu.degree || ""}
                 {edu.gpa ? ` (GPA: ${edu.gpa})` : ""}
               </Text>
-              <DateRange start={edu.startDate} end={edu.graduateDate} size={10} />
+              <DateRange
+                start={edu.startDate}
+                end={edu.graduateDate}
+                size={10}
+              />
             </View>
             {edu.coursework && (
               <Text style={s.normal10}>
@@ -330,10 +334,7 @@ function AwardsPdf({ title, data }: { title: string; data: any[] }) {
               <Text style={s.normal10}>
                 <Text style={{ fontFamily: "Times-Bold" }}>{award.title}</Text>
                 {award.issuer && (
-                  <Text style={{ fontStyle: "italic" }}>
-                    {" "}
-                    - {award.issuer}
-                  </Text>
+                  <Text style={{ fontStyle: "italic" }}> - {award.issuer}</Text>
                 )}
               </Text>
               <Text style={s.normal10}>{award.date || ""}</Text>
@@ -578,16 +579,11 @@ export function JakeRyanPdfDocument({ data }: { data: ResumeData }) {
       <Page size="LETTER" style={s.page}>
         {/* HEADER */}
         <View style={s.headerWrap}>
-          <Text style={s.fullName}>
-            {data.personalInfo?.fullName || ""}
-          </Text>
+          <Text style={s.fullName}>{data.personalInfo?.fullName || ""}</Text>
           <Text style={s.contactLine}>
             {data.personalInfo?.phone && `${data.personalInfo.phone} · `}
             {data.personalInfo?.email && (
-              <Link
-                src={`mailto:${data.personalInfo.email}`}
-                style={s.link}
-              >
+              <Link src={`mailto:${data.personalInfo.email}`} style={s.link}>
                 {data.personalInfo.email}
               </Link>
             )}
