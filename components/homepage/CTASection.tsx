@@ -39,10 +39,39 @@ export function CTASection() {
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Button
                 onClick={handleGetStarted}
-                className="cursor-pointer bg-primary-foreground text-primary hover:bg-primary-foreground/90 font-semibold shadow-xl text-lg px-16 py-7"
+                disabled={isPending}
+                className="cursor-pointer bg-primary-foreground text-primary hover:bg-primary-foreground/90 font-semibold shadow-xl text-lg px-16 py-7 flex items-center justify-center"
               >
-                Build Your Resume Now
-                <ArrowRight className="w-6 h-6 ml-2" />
+                {isPending ? (
+                  <span className="flex items-center">
+                    <svg
+                      className="animate-spin h-6 w-6 mr-2 text-primary"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      />
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8v8z"
+                      />
+                    </svg>
+                    Loading...
+                  </span>
+                ) : (
+                  <>
+                    Build Your Resume Now
+                    <ArrowRight className="w-6 h-6 ml-2" />
+                  </>
+                )}
               </Button>
             </div>
           </div>
