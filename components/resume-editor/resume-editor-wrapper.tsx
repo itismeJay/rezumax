@@ -86,7 +86,7 @@ export default function ResumeEditorWrapper({
 
   const [saveStatus, setSaveStatus] = useState<"saving" | "saved" | null>(null);
   const [isSaving, setIsSaving] = useState(false);
-  const [zoomLevel, setZoomLevel] = useState(1.1);
+  const [zoomLevel, setZoomLevel] = useState(1);
 
   // ✅ STEP 6.2: Setup drag-and-drop sensors
   const sensors = useSensors(
