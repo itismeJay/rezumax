@@ -127,7 +127,7 @@ export function createDefaultSectionData(type: SectionType): any {
           school: "",
           degree: "",
           location: "",
-          graduationDate: "",
+          graduateDate: "",
           gpa: "",
           coursework: "",
         },
@@ -141,7 +141,7 @@ export function createDefaultSectionData(type: SectionType): any {
           location: "",
           startDate: "",
           endDate: "",
-          responsibilities: [""],
+          bullets: [""],
         },
       ];
     case "projects":
@@ -151,8 +151,8 @@ export function createDefaultSectionData(type: SectionType): any {
           name: "",
           technologies: "",
           description: "",
-          link: "",
-          highlights: [""],
+          projectLink: "",
+          bullets: [""],
         },
       ];
     case "skills":

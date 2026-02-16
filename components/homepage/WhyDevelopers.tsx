@@ -1,11 +1,13 @@
 "use client";
 
 import { whyDevelopersFeatures } from "@/constants/whyDevelopersFeatures";
+import { ScrollReveal } from "../ui/scroll-reveal";
 
 export function WhyDevelopers() {
   return (
     <section className="py-20 lg:py-32 bg-background">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+      <ScrollReveal>
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center max-w-2xl mx-auto mb-16">
           <span className="inline-block px-4 py-1.5 rounded-full bg-success/10 text-success text-sm font-medium mb-4">
@@ -43,7 +45,8 @@ export function WhyDevelopers() {
             </div>
           ))}
         </div>
-      </div>
+        </div>
+      </ScrollReveal>
     </section>
   );
 }

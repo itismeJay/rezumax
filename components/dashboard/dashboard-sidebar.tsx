@@ -36,6 +36,7 @@ export function DashboardSidebar() {
   const [collapsed, setCollapsed] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [activeLink, setActiveLink] = useState<string | null>(pathname);
+  const [navigating, setNavigating] = useState<string | null>(null);
 
   const handleLogout = async () => {
     try {
@@ -52,6 +53,22 @@ export function DashboardSidebar() {
 
   useEffect(() => {
     setActiveLink(pathname);
+  }, [pathname]);
+
+  // Prefetch dashboard routes to make navigation feel snappier
+  useEffect(() => {
+    navItems.forEach((item) => {
+      try {
+        router.prefetch(item.href);
+      } catch (e) {
+        // ignore prefetch errors
+      }
+    });
+  }, [router]);
+
+  // Clear navigating state when route changes
+  useEffect(() => {
+    setNavigating(null);
   }, [pathname]);
 
   return (
@@ -120,7 +137,10 @@ export function DashboardSidebar() {
                 <Link
                   key={item.href}
                   href={item.href}
-                  onClick={() => setActiveLink(item.href)}
+                  onClick={() => {
+                    setActiveLink(item.href);
+                    setNavigating(item.href);
+                  }}
                   className={cn(
                     "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-300",
                     activeLink === item.href
@@ -129,7 +149,11 @@ export function DashboardSidebar() {
                     collapsed && "justify-center",
                   )}
                 >
-                  <item.icon className="w-5 h-5 shrink-0" />
+                  {navigating === item.href ? (
+                    <Loader2 className="w-5 h-5 shrink-0 animate-spin" />
+                  ) : (
+                    <item.icon className="w-5 h-5 shrink-0" />
+                  )}
 
                   <span
                     className={cn(
@@ -139,7 +163,7 @@ export function DashboardSidebar() {
                         : "opacity-100 w-auto",
                     )}
                   >
-                    {item.label}
+                    {navigating === item.href ? "Loading..." : item.label}
                   </span>
                 </Link>
               );
