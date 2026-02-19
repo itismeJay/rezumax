@@ -287,4 +287,18 @@
   .green-glow {
     box-shadow: 0 0 20px hsl(158 64% 52% / 0.4);
   }
+
+  /* Reveal animation helpers used by ScrollReveal component */
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: opacity var(--reveal-duration, 600ms) ease-out,
+      transform var(--reveal-duration, 600ms) ease-out;
+    transition-delay: var(--reveal-delay, 0ms);
+    will-change: opacity, transform;
+  }
+
+  .reveal.reveal--hidden {
+    opacity: 0;
+  }
 }

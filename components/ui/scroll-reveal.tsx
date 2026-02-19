@@ -1,6 +1,6 @@
 "use client";
 
-import { ReactNode } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
 import { cn } from "@/lib/utils";
 
@@ -22,8 +22,14 @@ export function ScrollReveal({
   // Trigger when section is near the middle of the viewport
   const { ref, isVisible } = useScrollReveal({
     threshold: 0,
-    rootMargin: "-40% 0px -40% 0px", // triggers in the middle 20% of viewport
+    rootMargin: "0px 0px -10% 0px", // relaxed so above-the-fold triggers sooner
   });
+
+  // avoid rendering hidden state on the server — only apply hiding after hydration
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const getTransform = () => {
     switch (direction) {
@@ -42,16 +48,21 @@ export function ScrollReveal({
     }
   };
 
+  const hidden = mounted ? !isVisible : false;
+
   return (
     <div
       ref={ref}
-      className={cn(className)}
-      style={{
-        opacity: isVisible ? 1 : 0,
-        transform: isVisible ? "none" : getTransform(),
-        transition: `opacity ${duration}ms ease-out, transform ${duration}ms ease-out`,
-        transitionDelay: `${delay}ms`,
-      }}
+      className={cn(className, "reveal", hidden && "reveal--hidden")}
+      style={
+        {
+          // allow per-instance duration/delay via CSS variables
+          ["--reveal-duration" as any]: `${duration}ms`,
+          ["--reveal-delay" as any]: `${delay}ms`,
+          // only apply transform when hidden (client-side) so server output remains visible
+          transform: hidden ? getTransform() : "none",
+        } as React.CSSProperties
+      }
     >
       {children}
     </div>

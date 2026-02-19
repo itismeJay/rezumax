@@ -82,7 +82,11 @@ export function LiveScorePreview() {
             <div className="flex justify-center">
               <div className="relative">
                 <div className="absolute inset-0 blur-3xl bg-primary/20 rounded-full scale-75" />
-                <svg className="w-64 h-64 transform -rotate-90 relative z-10">
+                <svg
+                  className="w-64 h-64 transform -rotate-90 relative z-10"
+                  viewBox="0 0 256 256"
+                  preserveAspectRatio="xMidYMid meet"
+                >
                   <circle
                     cx="128"
                     cy="128"
