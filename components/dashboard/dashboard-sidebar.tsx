@@ -111,7 +111,7 @@ export function DashboardSidebar() {
                     : "opacity-100 w-auto",
                 )}
               >
-                RezumaX
+                Renhanced
               </span>
             </Link>
 
@@ -139,7 +139,9 @@ export function DashboardSidebar() {
                   href={item.href}
                   onClick={() => {
                     setActiveLink(item.href);
-                    setNavigating(item.href);
+                    if (pathname !== item.href) {
+                      setNavigating(item.href);
+                    }
                   }}
                   className={cn(
                     "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-300",

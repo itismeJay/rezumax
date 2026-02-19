@@ -3,14 +3,14 @@ import SignUpForm from "@/components/forms/signup-form";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Sign Up - RezumaX", // ✅ Updated app name
+  title: "Sign Up - Renhanced",
   description:
-    "Create a RezumaX account to start building and optimizing your resumes quickly with AI-powered suggestions.", // ✅ Updated description
+    "Create a Renhanced account to start building and optimizing your resumes quickly with AI-powered suggestions.",
   keywords: [
     "signup",
     "resume builder",
     "AI resume",
-    "RezumaX",
+    "Renhanced",
     "resume optimizer",
     "job application",
   ],

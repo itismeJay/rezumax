@@ -17,9 +17,9 @@ const geistMono = Geist_Mono({
 
 // Metadata for SEO & social sharing
 export const metadata: Metadata = {
-  title: "Rezumax",
+  title: "Renhanced",
   description:
-    "Rezumax is an AI-powered resume builder and optimizer that helps users craft professional resumes, tailor them for job applications, and improve their chances of landing interviews.",
+    "Renhanced is an AI-powered resume builder and optimizer that helps users craft professional resumes, tailor them for job applications, and improve their chances of landing interviews.",
 };
 
 export default function RootLayout({
