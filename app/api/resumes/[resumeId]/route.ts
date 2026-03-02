@@ -5,6 +5,10 @@ import { resume } from "@/db/schema";
 import { eq, and } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
+import {
+  invalidateResumeList,
+  invalidateSingleResume,
+} from "@/lib/cache/cacheService";
 
 // ✅ PATCH - Update resume content
 export async function PATCH(
@@ -61,6 +65,14 @@ export async function PATCH(
     }
 
     console.log("✅ Resume saved successfully");
+
+    // ✅ NEW: Invalidate cache for this specific resume
+    // Why? Content just changed so cached version is outdated
+    await invalidateSingleResume(resumeId);
+
+    // ✅ NEW: Also invalidate the list
+    // Why? List might show preview/updatedAt so it's also outdated
+    await invalidateResumeList(session.user.id);
 
     // 6️⃣ Revalidate the page cache (Next.js 15)
     revalidatePath(`/edit/${resumeId}`);

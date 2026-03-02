@@ -5,8 +5,10 @@ import { eq, and } from "drizzle-orm";
 import { resume } from "@/db/schema";
 import { redirect, notFound } from "next/navigation";
 import { headers } from "next/headers";
-import { ResumeFromDB, resumeFromDBSchema } from "@/types/resume-data";
+import { ResumeFromDB } from "@/types/resume-data";
 import ResumeEditorWrapper from "@/components/resume-editor/resume-editor-wrapper";
+import { CacheKeys } from "@/lib/cache/cacheKeys";
+import { cacheWrapper } from "@/lib/cache/cacheService";
 
 export default async function EditPage({
   params,
@@ -23,17 +25,26 @@ export default async function EditPage({
     redirect("/login");
   }
 
-  const [resumeData] = await db
-    .select()
-    .from(resume)
-    .where(and(eq(resume.id, resumeId), eq(resume.userId, session.user.id)));
+  // ✅ cacheWrapper replaces the raw db query
+  // "Need data? → use cacheWrapper" ← your rule
+  const resumeData = await cacheWrapper(
+    CacheKeys.resume.single(resumeId), // key: "resume:abc123"
+    () =>
+      // fetchFn: runs only on cache miss
+      db
+        .select()
+        .from(resume)
+        .where(and(eq(resume.id, resumeId), eq(resume.userId, session.user.id)))
+        .then((rows) => rows[0] ?? null), // return first row or null
+    "resume.single", // strategy: 15 min TTL
+  );
 
   if (!resumeData) {
     notFound();
   }
 
-  // Validate the resume data from DB against the schema
   const typedResumeData = resumeData as ResumeFromDB;
+
   return (
     <div>
       <ResumeEditorWrapper resumeData={typedResumeData} />

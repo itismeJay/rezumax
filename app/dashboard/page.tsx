@@ -11,6 +11,8 @@ import { formatDashboardStats } from "@/lib/resume/format-stats"; // ✅ NEW: Im
 import MotionWrapper from "@/components/dashboard/wrapper/motion-wrapper";
 import { CreateResumeButton } from "@/components/dashboard/create-resume-button";
 import Link from "next/link";
+import { cacheWrapper } from "@/lib/cache/cacheService";
+import { CacheKeys } from "@/lib/cache/cacheKeys";
 
 /**
  * Dashboard page - Shows user overview and recent activity
@@ -30,8 +32,19 @@ export default async function DashboardPage() {
   // 2. Fetch data in parallel (performance!)
   // ==========================================
   const [recentResumes, statsData] = await Promise.all([
-    getUserRecentResumes(user.id, 4),
-    getUserDashboardStats(user.id),
+    // ✅ Cache recent resumes for 5 min
+    cacheWrapper(
+      CacheKeys.resume.recent(user.id),
+      () => getUserRecentResumes(user.id, 4),
+      "resume.recent",
+    ),
+
+    // ✅ Cache dashboard stats for 5 min
+    cacheWrapper(
+      CacheKeys.user.stats(user.id),
+      () => getUserDashboardStats(user.id),
+      "user.stats",
+    ),
   ]);
 
   // ==========================================
