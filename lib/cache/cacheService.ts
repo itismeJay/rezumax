@@ -114,7 +114,10 @@ export async function cacheWrapper<T>(
 
 // Call when: resume created, deleted, renamed
 export async function invalidateResumeList(userId: string): Promise<void> {
-  await cacheDelete(`resume:list:user:${encodeURIComponent(userId)}`);
+  // Delete both the base list key and any paginated variants
+  // e.g. "resume:list:user:123" and "resume:list:user:123:page:1:limit:12"
+  const pattern = `resume:list:user:${encodeURIComponent(userId)}*`;
+  await cacheDeleteByPattern(pattern);
 }
 
 // Call when: resume content updated

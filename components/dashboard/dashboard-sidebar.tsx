@@ -25,7 +25,6 @@ const navItems = [
   { icon: LayoutDashboard, label: "Dashboard", href: "/dashboard" },
   { icon: Files, label: "My Resumes", href: "/dashboard/resumes" },
   { icon: BarChart3, label: "Analytics", href: "/dashboard/analytics" },
-  { icon: Database, label: "Schema", href: "/dashboard/schema" },
   { icon: User, label: "Profile", href: "/dashboard/profile" },
   { icon: Settings, label: "Settings", href: "/dashboard/settings" },
 ];
