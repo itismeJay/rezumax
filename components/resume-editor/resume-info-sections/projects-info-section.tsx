@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 import {
   ChevronUp,
   Eye,
@@ -19,6 +20,8 @@ import {
   Sparkles,
   Loader2,
 } from "lucide-react";
+import { Context } from "@dnd-kit/sortable/dist/components";
+import { compact } from "lodash";
 
 interface ProjectEntry {
   id: string;
@@ -52,7 +55,9 @@ export function ProjectsInfoSection({
   const ensureIds = (items: ProjectEntry[]) =>
     items.map((e) => ({ ...e, id: e.id || crypto.randomUUID() }));
 
-  const [entries, setEntries] = useState<ProjectEntry[]>(() => ensureIds(projectsInfo));
+  const [entries, setEntries] = useState<ProjectEntry[]>(() =>
+    ensureIds(projectsInfo),
+  );
   const [collapsed, setCollapsed] = useState(false);
   const [visible, setVisible] = useState<boolean>(externalVisible ?? true);
   const [isRenamingSection, setIsRenamingSection] = useState(false);
@@ -190,49 +195,96 @@ export function ProjectsInfoSection({
 
   // Generate bullet point with AI
   const handleGenerateBullet = async (entryId: string, bulletIndex: number) => {
+    // Step 1: Find the entry that owns this bullet
     const entry = entries.find((e) => e.id === entryId);
-    if (!entry) return;
 
+    // Step 2: Get the current text the user typed
+    const currentBullet = entry?.bullets[bulletIndex];
+
+    // Step 3: Validate — user must have typed something meaningful
+    if (!currentBullet || currentBullet.trim().length === 0) {
+      toast.error("Please write something first, then click Improve with AI", {
+        description: "Type what your project does in your own words first.",
+      });
+      return;
+    }
+
+    if (currentBullet.trim().length < 5) {
+      toast.error("Please write at least 5 characters", {
+        description: "Give a bit more detail about what this project does.",
+      });
+      return;
+    }
+
+    // Step 4: Set loading state for THIS specific bullet only
     const bulletKey = `${entryId}-${bulletIndex}`;
     setLoadingBullet(bulletKey);
 
     try {
-      // Simulate AI generation (replace with actual API call)
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      const response = await fetch("/api/ai/improve-bullet", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          input: currentBullet,
+          context: {
+            jobTitle: entry.name,
+            company: entry.technologies,
+            type: "project",
+          },
+        }),
+      });
 
-      const generatedBullet = `Developed key feature for ${entry.name} using ${entry.technologies}`;
-      handleBulletChange(entryId, bulletIndex, generatedBullet);
-    } catch (error) {
-      console.error("Failed to generate bullet:", error);
+      const data = await response.json();
+
+      // Step 6: Handle API errors
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to improve bullet");
+      }
+
+      // Step 7: Update the bullet with the improved version
+      handleBulletChange(entryId, bulletIndex, data.bullet);
+
+      // Step 8: Show success feedback
+      toast.success("Bullet point improved", {
+        description: "Your text has been enhanced to sound more professional.",
+      });
+    } catch (error: unknown) {
+      console.error("Failed to improve bullet:", error);
+      toast.error("Failed to improve bullet point", {
+        description:
+          error instanceof Error
+            ? error.message
+            : "Something went wrong. Please try again.",
+      });
     } finally {
       setLoadingBullet(null);
     }
   };
 
-  // Generate all bullets for an entry
-  const handleGenerateAllBullets = async (entryId: string) => {
-    const entry = entries.find((e) => e.id === entryId);
-    if (!entry) return;
+  // // Generate all bullets for an entry
+  // const handleGenerateAllBullets = async (entryId: string) => {
+  //   const entry = entries.find((e) => e.id === entryId);
+  //   if (!entry) return;
 
-    setLoadingBullet(`${entryId}-all`);
+  //   setLoadingBullet(`${entryId}-all`);
 
-    try {
-      // Simulate AI generation (replace with actual API call)
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+  //   try {
+  //     // Simulate AI generation (replace with actual API call)
+  //     await new Promise((resolve) => setTimeout(resolve, 1500));
 
-      const generatedBullets = [
-        `Built ${entry.name} using ${entry.technologies} to solve real-world problems`,
-        `Implemented key features that improved user experience and functionality`,
-        `Collaborated with team members to deliver project on schedule`,
-      ];
+  //     const generatedBullets = [
+  //       `Built ${entry.name} using ${entry.technologies} to solve real-world problems`,
+  //       `Implemented key features that improved user experience and functionality`,
+  //       `Collaborated with team members to deliver project on schedule`,
+  //     ];
 
-      handleFieldChange(entryId, "bullets", generatedBullets);
-    } catch (error) {
-      console.error("Failed to generate bullets:", error);
-    } finally {
-      setLoadingBullet(null);
-    }
-  };
+  //     handleFieldChange(entryId, "bullets", generatedBullets);
+  //   } catch (error) {
+  //     console.error("Failed to generate bullets:", error);
+  //   } finally {
+  //     setLoadingBullet(null);
+  //   }
+  // };
 
   return (
     <Card
@@ -413,7 +465,7 @@ export function ProjectsInfoSection({
 
                 {/* Bullets Section */}
                 <div className="space-y-3">
-                  <div className="flex items-center justify-between">
+                  {/* <div className="flex items-center justify-between">
                     <Label className="text-xs text-muted-foreground font-medium">
                       Key Features & Achievements
                     </Label>
@@ -437,7 +489,7 @@ export function ProjectsInfoSection({
                         Suggest Bullet Point
                       </button>
                     </Button>
-                  </div>
+                  </div> */}
 
                   {entry.bullets.map((bullet, bulletIndex) => (
                     <div key={bulletIndex} className="flex gap-2 items-start">

@@ -7,9 +7,8 @@ import { redirect, notFound } from "next/navigation";
 import { headers } from "next/headers";
 import { ResumeFromDB } from "@/types/resume-data";
 import ResumeEditorWrapper from "@/components/resume-editor/resume-editor-wrapper";
-import { CacheKeys } from "@/lib/cache/cacheKeys";
-import { cacheWrapper } from "@/lib/cache/cacheService";
 
+// app/edit/[resumeId]/page.tsx
 export default async function EditPage({
   params,
 }: {
@@ -25,19 +24,12 @@ export default async function EditPage({
     redirect("/login");
   }
 
-  // ✅ cacheWrapper replaces the raw db query
-  // "Need data? → use cacheWrapper" ← your rule
-  const resumeData = await cacheWrapper(
-    CacheKeys.resume.single(resumeId), // key: "resume:abc123"
-    () =>
-      // fetchFn: runs only on cache miss
-      db
-        .select()
-        .from(resume)
-        .where(and(eq(resume.id, resumeId), eq(resume.userId, session.user.id)))
-        .then((rows) => rows[0] ?? null), // return first row or null
-    "resume.single", // strategy: 15 min TTL
-  );
+  // ✅ Direct DB query — no cache on the editor page
+  const resumeData = await db
+    .select()
+    .from(resume)
+    .where(and(eq(resume.id, resumeId), eq(resume.userId, session.user.id)))
+    .then((rows) => rows[0] ?? null);
 
   if (!resumeData) {
     notFound();

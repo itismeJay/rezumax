@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 import {
   ChevronUp,
   Eye,
@@ -30,15 +31,14 @@ interface ExperienceEntry {
   bullets: string[];
 }
 
-// ✅ FIX 1: Add the missing props to interface
 interface ExperienceSectionProps {
   experienceInfo: ExperienceEntry[];
   onChange: (updated: ExperienceEntry[]) => void;
   jobDescription?: string;
   visible?: boolean;
   onVisibilityChange?: (visible: boolean) => void;
-  sectionName?: string; // 👈 ADD THIS
-  onSectionNameChange?: (name: string) => void; // 👈 ADD THIS
+  sectionName?: string;
+  onSectionNameChange?: (name: string) => void;
 }
 
 export function ExperienceInfoSection({
@@ -47,13 +47,15 @@ export function ExperienceInfoSection({
   jobDescription = "",
   visible: externalVisible,
   onVisibilityChange,
-  sectionName: externalSectionName, // Already here ✅
-  onSectionNameChange, // Already here ✅
+  sectionName: externalSectionName,
+  onSectionNameChange,
 }: ExperienceSectionProps) {
   const ensureIds = (items: ExperienceEntry[]) =>
     items.map((e) => ({ ...e, id: e.id || crypto.randomUUID() }));
 
-  const [entries, setEntries] = useState<ExperienceEntry[]>(() => ensureIds(experienceInfo));
+  const [entries, setEntries] = useState<ExperienceEntry[]>(() =>
+    ensureIds(experienceInfo),
+  );
   const [collapsed, setCollapsed] = useState(false);
   const [visible, setVisible] = useState<boolean>(externalVisible ?? true);
   const [isRenamingSection, setIsRenamingSection] = useState(false);
@@ -75,7 +77,7 @@ export function ExperienceInfoSection({
     }
   }, [externalVisible]);
 
-  // ✅ FIX 3: Add useEffect to sync tempSectionName
+  // Sync tempSectionName
   useEffect(() => {
     setTempSectionName(sectionName);
   }, [sectionName]);
@@ -105,7 +107,7 @@ export function ExperienceInfoSection({
   // Add new experience entry
   const handleAddEntry = () => {
     const newEntry: ExperienceEntry = {
-      id: crypto.randomUUID(), // ✅ Perfect!
+      id: crypto.randomUUID(),
       position: "",
       company: "",
       location: "",
@@ -177,7 +179,6 @@ export function ExperienceInfoSection({
     setIsRenamingSection(true);
   };
 
-  // ✅ FIX 4: Call parent callback
   const handleConfirmRename = () => {
     if (onSectionNameChange) {
       onSectionNameChange(tempSectionName);
@@ -190,47 +191,73 @@ export function ExperienceInfoSection({
     setIsRenamingSection(false);
   };
 
-  // Generate bullet point with AI
+  // ============================================
+  // IMPROVE EXISTING BULLET (what user typed)
+  // ============================================
   const handleGenerateBullet = async (entryId: string, bulletIndex: number) => {
+    // Find the entry
     const entry = entries.find((e) => e.id === entryId);
     if (!entry) return;
 
+    // Get current bullet text
+    const currentBullet = entry.bullets[bulletIndex];
+
+    // ✅ VALIDATE: User must have typed something!
+    if (!currentBullet || currentBullet.trim().length === 0) {
+      toast.error(
+        "Please write something first, then click 'Improve with AI'",
+        {
+          description:
+            "Type what you did in your own words, then I'll make it professional!",
+        },
+      );
+      return;
+    }
+
+    if (currentBullet.trim().length < 5) {
+      toast.error("Please write at least 5 characters", {
+        description: "Give me a bit more detail about what you did!",
+      });
+      return;
+    }
+
+    // Show loading state
     const bulletKey = `${entryId}-${bulletIndex}`;
     setLoadingBullet(bulletKey);
 
     try {
-      // Simulate AI generation (replace with actual API call)
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      // Call API to improve bullet
+      const response = await fetch("/api/ai/improve-bullet", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          input: currentBullet,
+          context: {
+            jobTitle: entry.position,
+            company: entry.company,
+            type: "experience",
+          },
+        }),
+      });
 
-      const generatedBullet = `Achieved measurable impact in ${entry.position} role at ${entry.company}`;
-      handleBulletChange(entryId, bulletIndex, generatedBullet);
-    } catch (error) {
-      console.error("Failed to generate bullet:", error);
-    } finally {
-      setLoadingBullet(null);
-    }
-  };
+      const data = await response.json();
 
-  // Generate all bullets for an entry
-  const handleGenerateAllBullets = async (entryId: string) => {
-    const entry = entries.find((e) => e.id === entryId);
-    if (!entry) return;
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to improve bullet");
+      }
 
-    setLoadingBullet(`${entryId}-all`);
+      // Update the bullet with improved version
+      handleBulletChange(entryId, bulletIndex, data.bullet);
 
-    try {
-      // Simulate AI generation (replace with actual API call)
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-
-      const generatedBullets = [
-        `Led development initiatives at ${entry.company} as a ${entry.position}`,
-        `Improved team productivity and delivered measurable business results`,
-        `Collaborated with cross-functional teams to achieve project milestones`,
-      ];
-
-      handleFieldChange(entryId, "bullets", generatedBullets);
-    } catch (error) {
-      console.error("Failed to generate bullets:", error);
+      // Show success
+      toast.success("Bullet point improved!", {
+        description: "Your text has been enhanced to sound more professional!",
+      });
+    } catch (error: any) {
+      console.error("Failed to improve bullet:", error);
+      toast.error("Failed to improve bullet point", {
+        description: error.message || "Something went wrong. Please try again.",
+      });
     } finally {
       setLoadingBullet(null);
     }
@@ -304,7 +331,7 @@ export function ExperienceInfoSection({
         </div>
       </CardHeader>
 
-      {/* Content - Rest stays exactly the same */}
+      {/* Content */}
       {!collapsed && (
         <CardContent className="px-5 pb-5 space-y-6">
           {entries.map((entry, entryIndex) => (
@@ -400,31 +427,10 @@ export function ExperienceInfoSection({
 
               {/* Bullets Section */}
               <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <Label className="text-xs text-muted-foreground font-medium">
-                    Key Achievements & Responsibilities
-                  </Label>
-                  <Button
-                    asChild
-                    variant="gradient"
-                    size="sm"
-                    className="group gap-1.5 text-xs px-3 py-2 rounded-md shadow-md hover:shadow-lg active:scale-[0.98] transition-all duration-300 bg-gradient-to-r from-primary via-secondary to-primary bg-[length:200%_100%] hover:bg-[position:100%_0]"
-                  >
-                    <button
-                      type="button"
-                      className="flex items-center gap-1.5"
-                      onClick={() => handleGenerateAllBullets(entry.id)}
-                      disabled={loadingBullet === `${entry.id}-all`}
-                    >
-                      {loadingBullet === `${entry.id}-all` ? (
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                      ) : (
-                        <Sparkles className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                      )}
-                      Suggest Bullet Point
-                    </button>
-                  </Button>
-                </div>
+                <Label className="text-xs text-muted-foreground font-medium">
+                  Key Achievements & Responsibilities
+                </Label>
+
                 {entry.bullets.map((bullet, bulletIndex) => (
                   <div key={bulletIndex} className="flex gap-2 items-start">
                     <span className="text-muted-foreground mt-3 text-xs">
@@ -432,7 +438,7 @@ export function ExperienceInfoSection({
                     </span>
                     <div className="flex-1 relative">
                       <Textarea
-                        placeholder="Led development of... (use metrics and action verbs)"
+                        placeholder="Type what you did in your own words... (e.g., 'Built APIs for the payment system')"
                         className="min-h-[80px] text-sm resize-none pr-28 pb-10"
                         value={bullet}
                         onChange={(e) =>
@@ -444,30 +450,25 @@ export function ExperienceInfoSection({
                         }
                       />
 
-                      {/* Button inside the Textarea */}
+                      {/* Improve Button inside Textarea */}
                       <Button
-                        asChild
+                        type="button"
                         variant="gradient"
                         size="sm"
                         className="absolute bottom-2 right-2 group gap-1 text-xs px-3 py-1.5 rounded-md shadow-md border hover:shadow-lg active:scale-[0.98] transition-all duration-300 bg-gradient-to-r from-primary via-secondary to-primary bg-[length:200%_100%] hover:bg-[position:100%_0]"
+                        onClick={() =>
+                          handleGenerateBullet(entry.id, bulletIndex)
+                        }
+                        disabled={
+                          loadingBullet === `${entry.id}-${bulletIndex}`
+                        }
                       >
-                        <button
-                          type="button"
-                          className="flex items-center gap-1"
-                          onClick={() =>
-                            handleGenerateBullet(entry.id, bulletIndex)
-                          }
-                          disabled={
-                            loadingBullet === `${entry.id}-${bulletIndex}`
-                          }
-                        >
-                          {loadingBullet === `${entry.id}-${bulletIndex}` ? (
-                            <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                          ) : (
-                            <Sparkles className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-                          )}
-                          Improve with AI
-                        </button>
+                        {loadingBullet === `${entry.id}-${bulletIndex}` ? (
+                          <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        ) : (
+                          <Sparkles className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                        )}
+                        Improve with AI
                       </Button>
                     </div>
 

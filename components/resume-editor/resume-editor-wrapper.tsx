@@ -1,7 +1,6 @@
-// app/edit/[resumeId]/page.tsx
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { toast } from "sonner";
 import { useDebouncedCallback } from "use-debounce";
@@ -26,7 +25,6 @@ import {
 import {
   ArrowLeft,
   Save,
-  Download,
   ZoomIn,
   ZoomOut,
   Upload,
@@ -78,106 +76,160 @@ interface ResumeEditorWrapperProps {
 export default function ResumeEditorWrapper({
   resumeData,
 }: ResumeEditorWrapperProps) {
-  // ✅ STEP 6.1: Migrate old data to new format on load
+  // ✅ Migrate old data to new format on load
   const [resumeContent, setResumeContent] = useState<ResumeData>(() => {
     const content = resumeData.content as any;
     return migrateToNewFormat(content);
   });
 
+  // ✅ KEY FIX: Ref always mirrors the latest resumeContent synchronously.
+  // This lets every handler read fresh state without:
+  //   - stale closures (old problem)
+  //   - side effects inside setState updaters (new problem we introduced)
+  //   - React Strict Mode double-invocation of updaters killing the debounce timer
+  const resumeContentRef = useRef(resumeContent);
+  resumeContentRef.current = resumeContent; // runs every render, always in sync
+
   const [saveStatus, setSaveStatus] = useState<"saving" | "saved" | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [zoomLevel, setZoomLevel] = useState(1);
 
-  // ✅ STEP 6.2: Setup drag-and-drop sensors
+  // ✅ Setup drag-and-drop sensors
   const sensors = useSensors(
     useSensor(PointerSensor, {
-      activationConstraint: { distance: 8 }, // Prevent accidental drags
+      activationConstraint: { distance: 8 },
     }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
     }),
   );
 
-  // ✅ STEP 6.3: Auto-save function
+  // ✅ Auto-save debounce
   const debouncedAutoSave = useDebouncedCallback(
     async (content: ResumeData) => {
+      console.log("💾💾💾 DEBOUNCED AUTO-SAVE TRIGGERED! 💾💾💾");
+      console.log("💾 Content to save:", JSON.stringify(content, null, 2));
+
       try {
         setSaveStatus("saving");
+
+        console.log(
+          "💾 Making PATCH request to:",
+          `/api/resumes/${resumeData.id}`,
+        );
+
         const response = await fetch(`/api/resumes/${resumeData.id}`, {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ content }),
         });
-        if (!response.ok) throw new Error("Failed to save");
-        console.log("✅ Auto-saved successfully");
+
+        console.log("Response status:", response.status);
+        console.log("Response OK:", response.ok);
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          console.error("Error response:", errorData);
+          throw new Error("Failed to save");
+        }
+
+        const result = await response.json();
+        console.log("Auto-saved successfully:", result);
+
         setSaveStatus("saved");
         setTimeout(() => setSaveStatus(null), 2000);
-      } catch (error) {
-        console.error("❌ Auto-save failed:", error);
+      } catch (error: any) {
+        console.error("Auto-save failed:", error);
         toast.error("Failed to auto-save changes");
         setSaveStatus(null);
       }
     },
-    1000,
+    2000,
   );
 
-  // ✅ STEP 6.4: Personal info handler (unchanged)
+  // ✅ Save before page unload
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      console.log("⚠️ Page unloading - flushing pending saves!");
+      debouncedAutoSave.flush();
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, [debouncedAutoSave]);
+
+  // ✅ Personal info handler — reads from ref, calls save outside setState
   const handlePersonalInfoChange = (
     personalInfo: ResumeData["personalInfo"],
   ) => {
-    const updated = { ...resumeContent, personalInfo };
+    console.log("🟢 Parent: Personal info changed");
+
+    const updated = { ...resumeContentRef.current, personalInfo };
     setResumeContent(updated);
     debouncedAutoSave(updated);
+
+    console.log("🟢 Parent: debouncedAutoSave called");
   };
 
-  // ✅ STEP 6.5: GENERIC section data change handler (replaces 4 separate handlers!)
+  // ✅ Section data handler — reads from ref, calls save outside setState
   const handleSectionDataChange = (sectionId: string, data: any) => {
+    console.log("Parent: Section data changed");
+    console.log("Section ID:", sectionId);
+
     const updated = {
-      ...resumeContent,
-      sections: resumeContent.sections.map((section) =>
+      ...resumeContentRef.current,
+      sections: resumeContentRef.current.sections.map((section) =>
         section.id === sectionId ? { ...section, data } : section,
       ),
     };
+
     setResumeContent(updated);
     debouncedAutoSave(updated);
+
+    console.log("🟢 Parent: debouncedAutoSave called");
   };
 
-  // ✅ STEP 6.6: Add new section
+  // ✅ Add new section
   const handleAddSection = (type: SectionType) => {
     const newSection: ResumeSection = {
-      id: `${type}-${Date.now()}`, // Unique ID
+      id: `${type}-${Date.now()}`,
       type,
       title: getDefaultSectionTitle(type),
-      order: resumeContent.sections.length, // Add to end
+      order: resumeContentRef.current.sections.length,
       visible: true,
       data: createDefaultSectionData(type),
     };
 
     const updated = {
-      ...resumeContent,
-      sections: [...resumeContent.sections, newSection],
+      ...resumeContentRef.current,
+      sections: [...resumeContentRef.current.sections, newSection],
     };
     setResumeContent(updated);
     debouncedAutoSave(updated);
     toast.success(`Added ${getDefaultSectionTitle(type)}`);
   };
 
-  // ✅ STEP 6.7: Delete section
+  // ✅ Delete section
   const handleDeleteSection = (sectionId: string) => {
     const updated = {
-      ...resumeContent,
-      sections: resumeContent.sections.filter((s) => s.id !== sectionId),
+      ...resumeContentRef.current,
+      sections: resumeContentRef.current.sections.filter(
+        (s) => s.id !== sectionId,
+      ),
     };
     setResumeContent(updated);
     debouncedAutoSave(updated);
     toast.success("Section removed");
   };
 
-  // ✅ STEP 6.8: Toggle visibility
+  // ✅ Toggle visibility
   const handleToggleVisibility = (sectionId: string) => {
     const updated = {
-      ...resumeContent,
-      sections: resumeContent.sections.map((s) =>
+      ...resumeContentRef.current,
+      sections: resumeContentRef.current.sections.map((s) =>
         s.id === sectionId ? { ...s, visible: !s.visible } : s,
       ),
     };
@@ -185,11 +237,11 @@ export default function ResumeEditorWrapper({
     debouncedAutoSave(updated);
   };
 
-  // ✅ STEP 6.9: Rename section
+  // ✅ Rename section
   const handleRenameSection = (sectionId: string, newTitle: string) => {
     const updated = {
-      ...resumeContent,
-      sections: resumeContent.sections.map((s) =>
+      ...resumeContentRef.current,
+      sections: resumeContentRef.current.sections.map((s) =>
         s.id === sectionId ? { ...s, title: newTitle } : s,
       ),
     };
@@ -197,23 +249,26 @@ export default function ResumeEditorWrapper({
     debouncedAutoSave(updated);
   };
 
-  // ✅ STEP 6.10: Handle drag end (reorder sections)
+  // ✅ Handle drag end (reorder sections)
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
 
     if (over && active.id !== over.id) {
-      const oldIndex = resumeContent.sections.findIndex(
+      const oldIndex = resumeContentRef.current.sections.findIndex(
         (s) => s.id === active.id,
       );
-      const newIndex = resumeContent.sections.findIndex(
+      const newIndex = resumeContentRef.current.sections.findIndex(
         (s) => s.id === over.id,
       );
 
-      const reordered = arrayMove(resumeContent.sections, oldIndex, newIndex);
+      const reordered = arrayMove(
+        resumeContentRef.current.sections,
+        oldIndex,
+        newIndex,
+      );
 
-      // Update order property
       const updated = {
-        ...resumeContent,
+        ...resumeContentRef.current,
         sections: reordered.map((s, index) => ({ ...s, order: index })),
       };
 
@@ -222,11 +277,10 @@ export default function ResumeEditorWrapper({
     }
   };
 
-  // ✅ STEP 6.11: Render correct form component based on section type with chrome callbacks
+  // ✅ Render correct form component
   const renderSectionForm = (section: ResumeSection) => {
     const onChange = (data: any) => handleSectionDataChange(section.id, data);
 
-    // Common chrome props that will be passed to sections that support them
     const chromeProps = {
       sectionName: section.title,
       visible: section.visible,
@@ -359,28 +413,37 @@ export default function ResumeEditorWrapper({
     }
   };
 
-  // Get list of existing section types (for Add Section menu)
   const existingSectionTypes = resumeContent.sections.map((s) => s.type);
 
-  // ✅ FIX 1: Manual save handler with debounce cancellation
+  // ✅ Manual save handler
   const handleSaveClick = async () => {
-    // Cancel any pending auto-save to prevent race conditions
+    console.log("Manual save clicked!");
+
+    // Cancel any pending auto-save
     debouncedAutoSave.cancel();
 
     setIsSaving(true);
     setSaveStatus("saving");
+
     try {
+      console.log("Saving manually...");
+
+      // Use ref to guarantee we save the absolute latest content
       const response = await fetch(`/api/resumes/${resumeData.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ content: resumeContent }),
+        body: JSON.stringify({ content: resumeContentRef.current }),
       });
+
       if (!response.ok) throw new Error("Failed to save");
+
       setSaveStatus("saved");
       toast.success("Resume saved successfully!");
       setTimeout(() => setSaveStatus(null), 5000);
+
+      console.log("Manual save successful!");
     } catch (error) {
-      console.error("Save failed:", error);
+      console.error("Manual save failed:", error);
       toast.error("Failed to save changes");
       setSaveStatus(null);
     } finally {
@@ -396,7 +459,7 @@ export default function ResumeEditorWrapper({
 
   return (
     <div className="min-h-screen bg-background flex flex-col h-screen">
-      {/* Header - UNCHANGED */}
+      {/* Header */}
       <header className="flex-shrink-0 border-b border-border bg-card/80 backdrop-blur-md sticky top-0 z-50">
         <div className="max-w-[1920px] mx-auto px-6 h-16 flex items-center justify-between gap-4">
           <div className="flex items-center gap-4 min-w-0">
@@ -437,7 +500,6 @@ export default function ResumeEditorWrapper({
               <span className="hidden sm:inline">Save</span>
             </Button>
 
-            {/* ✅ REPLACE OLD DOWNLOAD BUTTON WITH NEW ONE */}
             <DownloadPDFButton
               resumeId={resumeData.id}
               fileName={getFileName()}
@@ -468,7 +530,7 @@ export default function ResumeEditorWrapper({
 
           <div className="flex-1 overflow-y-auto">
             <div className="p-6 space-y-5">
-              {/* AI Tailoring Card - UNCHANGED */}
+              {/* AI Tailoring Card */}
               <Card className="border-primary/20 bg-gradient-to-br from-primary/5 to-transparent">
                 <CardHeader className="px-5">
                   <div className="flex items-center gap-2">
@@ -491,13 +553,13 @@ export default function ResumeEditorWrapper({
                 </CardContent>
               </Card>
 
-              {/* Personal Info - Always visible */}
+              {/* Personal Info */}
               <PersonalInfoSection
                 personalInfo={resumeContent.personalInfo}
                 onChange={handlePersonalInfoChange}
               />
 
-              {/* ✅ STEP 6.12: Dynamic sections with drag-and-drop */}
+              {/* Dynamic sections with drag-and-drop */}
               <DndContext
                 sensors={sensors}
                 collisionDetection={closestCenter}
@@ -507,7 +569,6 @@ export default function ResumeEditorWrapper({
                   items={resumeContent.sections.map((s) => s.id)}
                   strategy={verticalListSortingStrategy}
                 >
-                  {/* ✅ FIX 2: Non-mutating sort using spread operator */}
                   {[...resumeContent.sections]
                     .sort((a, b) => a.order - b.order)
                     .map((section) => (
@@ -531,7 +592,7 @@ export default function ResumeEditorWrapper({
                 </SortableContext>
               </DndContext>
 
-              {/* ✅ STEP 6.13: Add Section Menu */}
+              {/* Add Section Menu */}
               <AddSectionMenu
                 existingSections={existingSectionTypes}
                 onAddSection={handleAddSection}
@@ -542,7 +603,7 @@ export default function ResumeEditorWrapper({
           </div>
         </div>
 
-        {/* Right Panel: Preview - UNCHANGED */}
+        {/* Right Panel: Preview */}
         <div className="hidden lg:flex w-1/2 bg-muted/50 flex-col h-full overflow-hidden">
           <div className="flex-shrink-0 px-6 py-3 bg-background/80 backdrop-blur-sm border-b border-border flex items-center justify-between">
             <span className="font-medium text-sm text-muted-foreground">
