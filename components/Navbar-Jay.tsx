@@ -3,34 +3,31 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { FileText, Menu, X, Moon, Sun, Loader2 } from "lucide-react";
+import { FileText, Menu, X, Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
+import { authClient } from "@/lib/auth-client";
+import { useRouter } from "next/navigation";
 
 export function Navbar() {
+  const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
-  const [navigating, setNavigating] = useState<string | null>(null);
   const { theme, setTheme } = useTheme();
   const pathname = usePathname();
   const [mounted, setMounted] = useState(false);
-<<<<<<< Updated upstream
   const { data: session, isPending } = authClient.useSession();
 
   const handleGetStarted = () => {
     if (isPending) return;
-    const target = session ? "/dashboard" : "/login";
-    router.push(target);
+    if (!session) {
+      router.push("/login");
+    } else {
+      router.push("/dashboard");
+    }
   };
-=======
->>>>>>> Stashed changes
 
   useEffect(() => {
     setMounted(true);
   }, []);
-
-  // Clear navigating state when pathname changes
-  useEffect(() => {
-    setNavigating(null);
-  }, [pathname]);
 
   // Only compute theme after mounted
   const isDark = mounted
@@ -67,7 +64,7 @@ export function Navbar() {
             <div className="w-9 h-9 rounded-lg bg-primary flex items-center justify-center shadow-md group-hover:shadow-lg transition-shadow duration-300">
               <FileText className="w-5 h-5 text-primary-foreground" />
             </div>
-            <span className="font-bold text-xl text-foreground">Renhanced</span>
+            <span className="font-bold text-xl text-foreground">RezumaX</span>
           </Link>
 
           {/* Desktop Nav */}
@@ -94,7 +91,7 @@ export function Navbar() {
                 variant="ghost"
                 size="icon"
                 onClick={toggleTheme}
-                className="rounded-full relative overflow-hidden"
+                className="rounded-full relative overflow-hidden cursor-pointer"
               >
                 <Sun
                   className={`absolute w-5 h-5 transition-all duration-500 ${
@@ -112,50 +109,17 @@ export function Navbar() {
                 />
               </Button>
             )}
-<<<<<<< Updated upstream
-            <Button
-              variant="ghost"
-              className="cursor-pointer"
-              size="sm"
-              onClick={() => {
-                setNavigating("auth");
-                router.push(session ? "/dashboard" : "/login");
-              }}
-            >
-              {navigating === "auth" ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : !session ? (
-                "Sign in"
-              ) : (
-                "Dashboard"
-              )}
-            </Button>
-
-            <Button
-              variant="gradient"
-              className="cursor-pointer"
-              size="sm"
-              onClick={() => {
-                setNavigating("cta");
-                router.push(session ? "/dashboard" : "/login");
-              }}
-            >
-              {navigating === "cta" ? (
-                <Loader2 className="w-4 h-4 animate-spin text-primary-foreground" />
-              ) : (
-                "Get Started Free"
-              )}
-            </Button>
-=======
-            <Link href="/login">
-              <Button variant="ghost" size="sm">
-                Log in
+            <Link href={!session ? "/login" : "/dashboard"}>
+              <Button variant="ghost" className="cursor-pointer" size="sm">
+                {!session ? "Sign in" : "Dashboard"}
               </Button>
             </Link>
-            <Link href="/dashboard">
-              <Button size="sm">Get Started Free</Button>
+
+            <Link href={session ? "/dashboard" : "/login"}>
+              <Button variant="gradient" className="cursor-pointer" size="sm">
+                Get Started Free
+              </Button>
             </Link>
->>>>>>> Stashed changes
           </div>
 
           {/* Mobile Menu */}
@@ -218,27 +182,13 @@ export function Navbar() {
                   </Button>
                 </Link>
 
-<<<<<<< Updated upstream
                 <Button
                   className="w-full"
-                  onClick={() => {
-                    if (isPending) return;
-                    setNavigating("mobile-cta");
-                    handleGetStarted();
-                  }}
+                  onClick={handleGetStarted}
                   disabled={isPending}
                 >
-                  {navigating === "mobile-cta" ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : (
-                    "Get Started"
-                  )}
+                  Get Started
                 </Button>
-=======
-                <Link href="/dashboard" className="cursor-pointer w-full">
-                  <Button className="w-full">Get Started Free</Button>
-                </Link>
->>>>>>> Stashed changes
               </div>
             </div>
           </div>

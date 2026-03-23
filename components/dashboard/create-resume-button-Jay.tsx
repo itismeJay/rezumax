@@ -4,14 +4,11 @@
 import { useState } from "react";
 import { Plus, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { type ButtonProps } from "@/components/ui/button"; // Import ButtonProps type
+import { type ButtonProps } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { CreateResumeModal } from "@/components/modals/create-resume-modal";
 import { TemplateSelectionModal } from "../modals/template-selection-modal";
-<<<<<<< Updated upstream
 import { toast } from "sonner";
-=======
->>>>>>> Stashed changes
 
 interface CreateResumeButtonProps {
   variant?: ButtonProps["variant"];
@@ -29,7 +26,6 @@ export function CreateResumeButton({
   const [open, setOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
 
-<<<<<<< Updated upstream
   // 🔥 THIS IS THE KEY FUNCTION - CREATES RESUME IN DATABASE
   const handleSelectTemplate = async (templateId: string) => {
     setLoading(true);
@@ -111,25 +107,23 @@ export function CreateResumeButton({
     } finally {
       setLoading(false);
     }
-=======
-  const handleSelectTemplate = (template: any) => {
-    console.log("template", template);
->>>>>>> Stashed changes
   };
 
   const handleSelectType = (type: "resume" | "cover-letter") => {
     console.log("Selected type:", type);
-    if (type == "resume") {
+    if (type === "resume") {
+      setOpen(false);
       setResumeModal(true);
     }
   };
 
   return (
     <>
+      {/* Button to open "Create Resume / Cover Letter" modal */}
       <Button
         variant={variant}
         size={size}
-        className={className || "gap-2"}
+        className={className || "gap-2 cursor-pointer"}
         onClick={() => setOpen(true)}
         disabled={loading}
       >
@@ -146,12 +140,14 @@ export function CreateResumeButton({
         )}
       </Button>
 
+      {/* Modal to select type (resume / cover letter) */}
       <CreateResumeModal
         open={open}
         onOpenChange={setOpen}
         onSelectType={handleSelectType}
       />
 
+      {/* Modal to select template */}
       <TemplateSelectionModal
         open={resumeModal}
         onOpenChange={setResumeModal}

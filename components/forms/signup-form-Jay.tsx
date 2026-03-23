@@ -59,7 +59,9 @@ export default function SignUpForm() {
     );
 
     if (success) {
-      toast.success((message as string) || "Signed up successfully");
+      toast.message(
+        `${message as string}   Please check your email to verify your account.`
+      );
       router.push("/dashboard");
       console.log(values);
     } else {
@@ -86,7 +88,7 @@ export default function SignUpForm() {
                   <FileText className="w-5 h-5 text-primary-foreground" />
                 </div>
                 <span className="font-bold text-xl text-foreground">
-                  Renhanced
+                  RezumaX
                 </span>
               </Link>
             </div>
@@ -195,7 +197,11 @@ export default function SignUpForm() {
                   />
                 </div>
 
-                <Button disabled={loading} className="w-full" type="submit">
+                <Button
+                  disabled={loading}
+                  className="w-full cursor-pointer"
+                  type="submit"
+                >
                   {loading ? <Loader2 className="animate-spin" /> : "Sign up"}
                 </Button>
               </form>

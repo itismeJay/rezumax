@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 // components/resume/JakeRyanResume.tsx
 
 import React, { useEffect, useRef, useState } from "react";
@@ -188,3 +189,99 @@ function getSectionComponent(type: string) {
 
   return components[type];
 }
+=======
+import { ResumeData } from "@/types/resume-data";
+
+export function JakeRyanTemplate({ data }: { data: ResumeData }) {
+  return (
+    <div
+      className="bg-white p-4 text-[6px] text-gray-900 h-full leading-tight"
+      style={{ fontFamily: "Times New Roman, serif" }}
+    >
+      <div className="text-center mb-2">
+        <div className="text-[12px] font-bold tracking-wide uppercase">
+          {data.personalInfo.fullName || "Jake Ryan"}
+        </div>
+        <div className="text-[5px] mt-0.5 flex items-center justify-center gap-1 flex-wrap">
+          <span>{data.personalInfo.phone || "123-456-7890"}</span>
+          <span>|</span>
+          <span className="text-blue-700 underline">
+            {data.personalInfo.email || "jake@su.edu"}
+          </span>
+          <span>|</span>
+          <span className="text-blue-700 underline">
+            {data.personalInfo.linkedin || "linkedin.com/in/jake"}
+          </span>
+          <span>|</span>
+          <span className="text-blue-700 underline">
+            {data.personalInfo.github || "github.com/jake"}
+          </span>
+        </div>
+      </div>
+
+      {/* Education */}
+      <section>
+        <div className="border-b border-gray-900 mb-1">
+          <div className="text-[7px] font-bold uppercase">Education</div>
+        </div>
+        {data.education?.map((edu, i) => (
+          <div key={i} className="mb-1.5">
+            <div className="flex justify-between text-[6px]">
+              <span className="font-bold">{edu.school}</span>
+              <span>{edu.location}</span>
+            </div>
+            <div className="flex justify-between italic text-[5px]">
+              <span>{edu.degree}</span>
+              <span>
+                {edu.startDate} – {edu.endDate}
+              </span>
+            </div>
+          </div>
+        ))}
+      </section>
+
+      {/* Experience */}
+      <section>
+        <div className="border-b border-gray-900 mb-1">
+          <div className="text-[7px] font-bold uppercase">Experience</div>
+        </div>
+        {data.experience?.map((exp, i) => (
+          <div key={i} className="mb-1.5">
+            <div className="flex justify-between text-[6px]">
+              <span className="font-bold">{exp.role}</span>
+              <span>
+                {exp.startDate} – {exp.endDate}
+              </span>
+            </div>
+            <div className="flex justify-between italic text-[5px]">
+              <span>{exp.company}</span>
+              <span>{exp.location}</span>
+            </div>
+            <ul className="list-disc ml-2 text-[5px] mt-0.5 space-y-0.5">
+              {exp.description.map((d, idx) => (
+                <li key={idx}>{d}</li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </section>
+
+      {/* Skills */}
+      {data.skills && data.skills.length > 0 && (
+        <section>
+          <div className="border-b border-gray-900 mb-1">
+            <div className="text-[7px] font-bold uppercase">
+              Technical Skills
+            </div>
+          </div>
+          <ul className="list-disc ml-2 text-[5px] space-y-0.5">
+            {data.skills.map((skill, idx) => (
+              <li key={idx}>{skill}</li>
+            ))}
+          </ul>
+        </section>
+      )}
+    </div>
+  );
+}
+>>>>>>> Stashed changes

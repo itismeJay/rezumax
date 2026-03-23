@@ -36,13 +36,13 @@ const documentTypes = [
 
 export function CreateResumeModal({
   open,
-
   onOpenChange,
   onSelectType,
 }: NewDocumentModalProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-lg">
+      {/* Fixed width and full-screen responsiveness */}
+      <DialogContent className="w-[95vw] max-w-[600px] sm:max-w-lg p-6 gap-4">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold text-center">
             Create New Document
@@ -66,7 +66,7 @@ export function CreateResumeModal({
                 "group relative flex items-center gap-4 p-5 rounded-xl border-2 transition-all duration-200 text-left",
                 type.available
                   ? "border-border hover:border-primary hover:bg-primary/5 cursor-pointer"
-                  : "border-border/50 opacity-50 cursor-not-allowed",
+                  : "border-border/50 opacity-50 cursor-not-allowed"
               )}
             >
               <div
@@ -74,13 +74,13 @@ export function CreateResumeModal({
                   "w-14 h-14 rounded-xl flex items-center justify-center transition-colors",
                   type.available
                     ? "bg-primary/10 group-hover:bg-primary/20"
-                    : "bg-muted",
+                    : "bg-muted"
                 )}
               >
                 <type.icon
                   className={cn(
                     "w-7 h-7",
-                    type.available ? "text-primary" : "text-muted-foreground",
+                    type.available ? "text-primary" : "text-muted-foreground"
                   )}
                 />
               </div>

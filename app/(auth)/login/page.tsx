@@ -3,8 +3,13 @@ import LoginForm from "@/components/forms/login-form";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
+<<<<<<< Updated upstream
   title: "Login - Renhanced",
   description: "Log in to your Renhanced account to manage your resumes.",
+=======
+  title: "Login - ResumaX",
+  description: "Log in to your ResumaX account to manage your resumes.",
+>>>>>>> Stashed changes
 };
 
 export default function LoginPage() {

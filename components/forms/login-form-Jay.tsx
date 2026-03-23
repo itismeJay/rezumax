@@ -19,18 +19,17 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { signUp } from "@/server/users";
+import { signIn } from "@/server/users";
 import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
 import React from "react";
 
 const formSchema = z.object({
-  username: z.string().min(3, "Username must be at least 3 characters long"),
   email: z.string().email("Please enter a valid email address"),
   password: z.string().min(8, "Password must be at least 8 characters long"),
 });
 
-export default function SignUpForm() {
+export default function LoginForm() {
   const router = useRouter();
   const [loading, setLoading] = React.useState<boolean>(false);
 
@@ -44,7 +43,6 @@ export default function SignUpForm() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      username: "",
       email: "",
       password: "",
     },
@@ -52,14 +50,10 @@ export default function SignUpForm() {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setLoading(true);
-    const { success, message } = await signUp(
-      values.username,
-      values.email,
-      values.password
-    );
+    const { success, message } = await signIn(values.email, values.password);
 
     if (success) {
-      toast.success((message as string) || "Signed up successfully");
+      toast.success((message as string) || "Signed in successfully");
       router.push("/dashboard");
       console.log(values);
     } else {
@@ -86,16 +80,16 @@ export default function SignUpForm() {
                   <FileText className="w-5 h-5 text-primary-foreground" />
                 </div>
                 <span className="font-bold text-xl text-foreground">
-                  Renhanced
+                  RezumaX
                 </span>
               </Link>
             </div>
 
             <h1 className="text-2xl font-bold text-foreground mb-2">
-              Create your account
+              Welcome back
             </h1>
             <p className="text-muted-foreground mb-8">
-              Sign up to start building amazing resumes.
+              Log in to your account to continue building amazing resumes.
             </p>
 
             {/* Social Login */}
@@ -133,22 +127,6 @@ export default function SignUpForm() {
                 onSubmit={form.handleSubmit(onSubmit)}
                 className="space-y-4"
               >
-                <div className="space-y-2">
-                  <FormField
-                    control={form.control}
-                    name="username"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Username</FormLabel>
-                        <FormControl>
-                          <Input placeholder="username" {...field} />
-                        </FormControl>
-
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
                 <div className="space-y-2">
                   <FormField
                     control={form.control}
@@ -195,18 +173,22 @@ export default function SignUpForm() {
                   />
                 </div>
 
-                <Button disabled={loading} className="w-full" type="submit">
-                  {loading ? <Loader2 className="animate-spin" /> : "Sign up"}
+                <Button
+                  disabled={loading}
+                  className="w-full cursor-pointer"
+                  type="submit"
+                >
+                  {loading ? <Loader2 className="animate-spin" /> : "Log in"}
                 </Button>
               </form>
             </Form>
             <p className="text-sm text-center text-muted-foreground mt-6">
-              Already have an account?{" "}
+              Don't have an account?{" "}
               <Link
-                href="/login"
+                href="/signup"
                 className="text-primary hover:underline font-medium"
               >
-                Log in
+                Sign up for free
               </Link>
             </p>
           </div>

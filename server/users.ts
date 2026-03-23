@@ -1,6 +1,7 @@
 // server/users.ts
 "use server";
 import { auth } from "@/lib/auth";
+<<<<<<< Updated upstream
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 import { user, resume } from "@/db/schema";
@@ -38,6 +39,8 @@ export async function getCurrentUserWithData() {
 
   return currentUser;
 }
+=======
+>>>>>>> Stashed changes
 
 // ✅ NEW: Get user's recent resumes
 export async function getUserRecentResumes(userId: string, limit: number = 4) {
@@ -102,11 +105,12 @@ export const signIn = async (email: string, password: string) => {
   try {
     await auth.api.signInEmail({
       body: {
-        email,
-        password,
+        email: email,
+        password: password,
       },
     });
     return { success: true, message: "Signed in successfully" };
+<<<<<<< Updated upstream
   } catch (error: any) {
     if (error && typeof error === "object" && "code" in error) {
       const code = (error as { code: string }).code;
@@ -128,6 +132,10 @@ export const signIn = async (email: string, password: string) => {
     }
 
     return { success: false, message: error.message || "Sign in failed" };
+=======
+  } catch (error) {
+    return { success: false, message: "Sign in failed" };
+>>>>>>> Stashed changes
   }
 };
 

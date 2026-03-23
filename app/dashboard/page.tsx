@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 // app/dashboard/page.tsx
 
 import { Zap } from "lucide-react";
@@ -130,4 +131,10 @@ export default async function DashboardPage() {
       </MotionWrapper>
     </div>
   );
+=======
+function DashboardPage() {
+  return <div>Dashboard</div>;
+>>>>>>> Stashed changes
 }
+
+export default DashboardPage;

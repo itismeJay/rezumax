@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
+<<<<<<< Updated upstream
 import { ScrollReveal } from "../ui/scroll-reveal";
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
@@ -20,6 +21,10 @@ export function CTASection() {
     }
   };
 
+=======
+
+export function CTASection() {
+>>>>>>> Stashed changes
   return (
     <section className="py-20 lg:py-32">
       <ScrollReveal>
@@ -31,6 +36,7 @@ export function CTASection() {
               <div className="absolute bottom-0 right-0 w-60 h-60 bg-primary-foreground rounded-full blur-3xl" />
             </div>
 
+<<<<<<< Updated upstream
             <div className="relative text-center max-w-2xl mx-auto">
               <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-primary-foreground mb-4">
                 Ready to Land Your Dream Job?
@@ -79,6 +85,25 @@ export function CTASection() {
                   )}
                 </Button>
               </div>
+=======
+          <div className="relative text-center max-w-2xl mx-auto">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-primary-foreground mb-4">
+              Ready to Land Your Dream Job?
+            </h2>
+            <p className="text-lg text-primary-foreground/80 mb-8">
+              Join thousands of developers who have improved their resumes and landed positions at top tech companies.
+            </p>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <Link href="/dashboard">
+                <Button
+                  size="xl"
+                  className="bg-primary-foreground text-primary hover:bg-primary-foreground/90 font-semibold shadow-xl"
+                >
+                  Build Your Resume Now
+                  <ArrowRight className="w-5 h-5 ml-2" />
+                </Button>
+              </Link>
+>>>>>>> Stashed changes
             </div>
           </div>
         </div>
